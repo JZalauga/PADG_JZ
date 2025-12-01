@@ -113,7 +113,7 @@ class GUI(tkinter.Tk):
         self.button_worker_add = tkinter.Button(self.frame_worker_form, text="Dodaj pracownika", command=self.worker_logic.add_worker)
         self.button_worker_add.grid(row=6, column=0, columnspan=2)
 
-        self.button_edit.config(text="Edytuj pracownika",)
+        self.button_edit.config(text="Edytuj pracownika", command=self.worker_logic.edit_worker)
         self.button_remove.config(text="Usuń pracownika", command=self.worker_logic.remove_worker)
     
     def __create_map_view(self):
@@ -155,7 +155,7 @@ class GUI(tkinter.Tk):
                 self.entry_worker_name.get(),
                 self.entry_worker_surname.get(),
                 self.entry_worker_cem.get(),
-                self.entry_worker_age.get()
+                int(self.entry_worker_age.get())
             ]
         else :
             return ["nie", "działa", "Aluzyjna 23G Warszawa", "cemetery"]
@@ -198,6 +198,14 @@ class GUI(tkinter.Tk):
             self.entry_cem_type.set(edited_cem.type)
 
             self.button_cem_add.config(text="Zapisz zmiany", command=lambda: self.cem_logic.update_cemetery(i))
+        if self.entry_choose_user.get() == "pracownicy":
+            self.entry_worker_address.insert(0, edited_cem.address)
+            self.entry_worker_name.insert(0, edited_cem.name)
+            self.entry_worker_surname.insert(0, edited_cem.surname)
+            self.entry_worker_cem.insert(0, edited_cem.cemetery)
+            self.entry_worker_age.insert(0, edited_cem.age)
+
+            self.button_worker_add.config(text="Zapisz zmiany", command=lambda: self.worker_logic.update_worker(i))
 
     def set_marker(self, latitude: float, longitude: float, text: str, color: str) -> None:
         marker = self.map_widget.set_marker(latitude, longitude, text, marker_color_outside=color)
