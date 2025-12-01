@@ -64,11 +64,15 @@ class CemeteryFunctions:
 
     def update_cemetery(self, index: int) -> None:
         info = self.gui.get_cem_entry()
-        cem_index = index
-        edited_cem = cemetery_list[cem_index]
+        edited_cem = cemetery_list[index]
         edited_cem.address = info[0]
         edited_cem.name = info[1]
         edited_cem.type = info[2]
+        if edited_cem.marker:
+            edited_cem.marker.delete()
+        edited_cem.coords = edited_cem.get_coord_OSM()
+        edited_cem.marker = self.gui.set_marker(edited_cem.coords[0], edited_cem.coords[1], edited_cem.name, edited_cem.color)
+
         self.gui.update_cem_info(cemetery_list)
         self.gui.clear_cem_form()
 
