@@ -1,7 +1,8 @@
 import tkinter
 from tkinter import ttk
 
-from PADG_lib.controller import CemeteryFunctions
+from PADG_lib.controller import CemeteryFunctions, WorkerFunctions
+
 
 class GUI(tkinter.Tk):
     def __init__(self):
@@ -9,10 +10,10 @@ class GUI(tkinter.Tk):
         self.title("PADG_JZ")
         self.geometry("1025x600")
 
-        self.user: str = "cemetery"
+        self.user: str = "pracownicy"
 
         self.cem_logic = CemeteryFunctions(self)
-
+        self.worker_logic = WorkerFunctions(self)
 
         self.__create_map_view()
         self.__create_widgets()
@@ -95,13 +96,18 @@ class GUI(tkinter.Tk):
         self.entry_worker_address = tkinter.Entry(self.frame_worker_form)
         self.entry_worker_address.grid(row=3, column=1, pady=2, sticky="ew")
 
-        self.label_worker_address = tkinter.Label(self.frame_worker_form, text="Wiek:")
-        self.label_worker_address.grid(row=4, column=0)
-        self.entry_worker_address = tkinter.Entry(self.frame_worker_form)
-        self.entry_worker_address.grid(row=4, column=1, pady=2, sticky="ew")
+        self.label_worker_age = tkinter.Label(self.frame_worker_form, text="Wiek:")
+        self.label_worker_age.grid(row=4, column=0)
+        self.entry_worker_age = tkinter.Entry(self.frame_worker_form)
+        self.entry_worker_age.grid(row=4, column=1, pady=2, sticky="ew")
 
-        self.button_worker_add = tkinter.Button(self.frame_worker_form, text="Dodaj cmentarz",)
-        self.button_worker_add.grid(row=5, column=0, columnspan=2)
+        self.label_worker_cem = tkinter.Label(self.frame_worker_form, text="Cmentarz:")
+        self.label_worker_cem.grid(row=5, column=0)
+        self.entry_worker_cem = tkinter.Entry(self.frame_worker_form)
+        self.entry_worker_cem.grid(row=5, column=1, pady=2, sticky="ew")
+
+        self.button_worker_add = tkinter.Button(self.frame_worker_form, text="Dodaj pracownika", command=self.worker_logic.add_worker)
+        self.button_worker_add.grid(row=6, column=0, columnspan=2)
     
     def __create_map_view(self):
         import tkintermapview
@@ -130,27 +136,45 @@ class GUI(tkinter.Tk):
             self.user = ""
 
     def get_entry(self) -> list:
-        if self.user == "cemetery":
+        if self.entry_choose_user.get() == "cmentarze":
             return [
                 self.entry_cem_address.get(),
                 self.entry_cem_name.get(),
                 self.entry_cem_type.get()
             ]
+        if self.entry_choose_user.get() == "pracownicy":
+            return [
+                self.entry_worker_address.get(),
+                self.entry_worker_name.get(),
+                self.entry_worker_surname.get(),
+                self.entry_worker_cem.get(),
+                self.entry_worker_age.get()
+            ]
         else :
-            return []
+            return ["nie", "działa", "Aluzyjna 23G Warszawa", "cemetery"]
 
-    def update_info(self, cem_list: list) -> None:
+    def update_info(self, object_list: list) -> None:
         self.listbox_list.delete(0, tkinter.END)
-        if self.user == "cemetery":
-            for idx, item in enumerate(cem_list):
+        if self.entry_choose_user.get() == "cmentarze":
+            for idx, item in enumerate(object_list):
                 self.listbox_list.insert(tkinter.END, f"{idx + 1}. {item.name} {item.type}")
+        if self.entry_choose_user.get() == "pracownicy":
+            for idx, item in enumerate(object_list):
+                self.listbox_list.insert(tkinter.END, f"{idx + 1}. {item.name} {item.surname}")
 
     def clear_form(self):
-        if self.user == "cemetery":
+        if self.entry_choose_user.get() == "cmentarze":
             self.entry_cem_name.delete(0, tkinter.END)
             self.entry_cem_address.delete(0, tkinter.END)
             self.entry_cem_type.set('')
             self.entry_cem_name.focus()
+        if self.entry_choose_user.get() == "pracownicy":
+            self.entry_worker_address.delete(0, tkinter.END)
+            self.entry_worker_name.delete(0, tkinter.END)
+            self.entry_worker_surname.delete(0, tkinter.END)
+            self.entry_worker_age.delete(0, tkinter.END)
+            self.entry_worker_cem.delete(0, tkinter.END)
+            self.entry_worker_name.focus()
 
     def get_active_index(self) -> int:
         selected = self.listbox_list.curselection()
@@ -161,7 +185,7 @@ class GUI(tkinter.Tk):
     def fill_form(self, edited_cem: object, index: int) -> None:
         self.clear_form()
         i = index
-        if self.user == "cemetery":
+        if self.entry_choose_user.get() == "cmentarze":
             self.entry_cem_address.insert(0, edited_cem.address)
             self.entry_cem_name.insert(0, edited_cem.name)
             self.entry_cem_type.set(edited_cem.type)
