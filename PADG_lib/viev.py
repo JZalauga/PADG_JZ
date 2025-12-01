@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import ttk
 
+
 from PADG_lib.controller import CemeteryFunctions, WorkerFunctions
 
 
@@ -10,7 +11,7 @@ class GUI(tkinter.Tk):
         self.title("PADG_JZ")
         self.geometry("1025x600")
 
-        self.user: str = "pracownicy"
+        self.user: str = "cmentarze"
 
         self.cem_logic = CemeteryFunctions(self)
         self.worker_logic = WorkerFunctions(self)
@@ -40,10 +41,10 @@ class GUI(tkinter.Tk):
         self.listbox_list.grid(row=2, column=0, columnspan=3)
         
 
-        self.button_remove = tkinter.Button(self.frame_list, text="Usuń cmentarz", command=self.cem_logic.remove_cemetery)
+        self.button_remove = tkinter.Button(self.frame_list)
         self.button_remove.grid(row=3, column=1)
 
-        self.button_edit = tkinter.Button(self.frame_list, text="Edytuj cmentarz", command=self.cem_logic.edit_cemetery)
+        self.button_edit = tkinter.Button(self.frame_list)
         self.button_edit.grid(row=3, column=2)
         
     def __create_cem_view(self):
@@ -73,6 +74,9 @@ class GUI(tkinter.Tk):
         self.button_cem_add = tkinter.Button(self.frame_cem_form, text="Dodaj cmentarz",
                                              command=self.cem_logic.add_cemetery)
         self.button_cem_add.grid(row=4, column=0, columnspan=2)
+
+        self.button_edit.config(text="Edytuj cmentarz", command=self.cem_logic.edit_cemetery)
+        self.button_remove.config(text="Usuń cmentarz", command=self.cem_logic.remove_cemetery)
 
     def __create_worker_view(self):
         self.frame_worker_form = tkinter.Frame(self)
@@ -108,6 +112,9 @@ class GUI(tkinter.Tk):
 
         self.button_worker_add = tkinter.Button(self.frame_worker_form, text="Dodaj pracownika", command=self.worker_logic.add_worker)
         self.button_worker_add.grid(row=6, column=0, columnspan=2)
+
+        self.button_edit.config(text="Edytuj pracownika",)
+        self.button_remove.config(text="Usuń pracownika", command=self.worker_logic.remove_worker)
     
     def __create_map_view(self):
         import tkintermapview

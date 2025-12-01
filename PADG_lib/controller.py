@@ -96,21 +96,21 @@ class WorkerFunctions:
         self.gui.update_info(workers_list)
         self.gui.clear_form()
 
-    # def remove_cemetery(self) -> None:
-    #     index = self.gui.get_active_index()
-    #     cemetery_list[index].marker.delete()
-    #     cemetery_list.pop(index)
-    #     self.gui.update_info(cemetery_list)
-    #
+    def remove_worker(self) -> None:
+        index = self.gui.get_active_index()
+        workers_list[index].marker.delete()
+        workers_list.pop(index)
+        self.gui.update_info(workers_list)
+
     # def edit_cemetery(self)  -> None:
     #     cem_index = self.gui.get_active_index()
-    #     edited_cem = cemetery_list[cem_index]
+    #     edited_cem = workers_list[cem_index]
     #     self.gui.fill_form(edited_cem, cem_index)
     #
     #
     # def update_cemetery(self, index: int) -> None:
     #     info = self.gui.get_entry()
-    #     edited_cem = cemetery_list[index]
+    #     edited_cem = workers_list[index]
     #     edited_cem.address = info[0]
     #     edited_cem.name = info[1]
     #     edited_cem.type = info[2]
