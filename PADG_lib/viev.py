@@ -39,17 +39,17 @@ class GUI(tkinter.Tk):
         self.label_cem_name = tkinter.Label(self.frame_cem_form, text="Nazwa:")
         self.label_cem_name.grid(row=1, column=0)
         self.entry_cem_name = tkinter.Entry(self.frame_cem_form)
-        self.entry_cem_name.grid(row=1, column=1)
+        self.entry_cem_name.grid(row=1, column=1, pady = 2, sticky = "ew")
 
         self.label_cem_type = tkinter.Label(self.frame_cem_form, text="Typ:")
         self.label_cem_type.grid(row=2, column=0)
         self.entry_cem_type = ttk.Combobox(self.frame_cem_form, values=["komunalny","rzymskokatolicki", "ewangelicki", "żydowski", "prawosławny", "inny"])
-        self.entry_cem_type.grid(row=2, column=1)
+        self.entry_cem_type.grid(row=2, column=1, pady= 2, sticky="ew")
 
         self.label_cem_address = tkinter.Label(self.frame_cem_form, text="Adres:")
         self.label_cem_address.grid(row=3, column=0)
         self.entry_cem_address = tkinter.Entry(self.frame_cem_form)
-        self.entry_cem_address.grid(row=3, column=1)
+        self.entry_cem_address.grid(row=3, column=1, pady = 2, sticky= "ew")
 
         self.button_cem_add = tkinter.Button(self.frame_cem_form, text="Dodaj cmentarz", command=self.cem_logic.add_cemetery)
         self.button_cem_add.grid(row=4, column=0, columnspan=2)
