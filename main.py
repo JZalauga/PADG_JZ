@@ -1,5 +1,8 @@
 import tkinter
 from tkinter import ttk
+
+
+cemetery_list: list = []
 class Object:
     def __init__(self, address: str):
         self.address: str = address
@@ -37,6 +40,7 @@ class GUI(tkinter.Tk):
         self.title("PADG_JZ")
         self.geometry("800x600")
 
+        self.cem_logic = CemeteryFunctions(self)
 
         self.__create_widgets()
 
@@ -80,8 +84,31 @@ class GUI(tkinter.Tk):
         self.entry_cem_address = tkinter.Entry(self.frame_cem_form)
         self.entry_cem_address.grid(row=3, column=1)
 
-        self.button_cem_add = tkinter.Button(self.frame_cem_form, text="Dodaj cmentarz")
+        self.button_cem_add = tkinter.Button(self.frame_cem_form, text="Dodaj cmentarz", command=self.cem_logic.add_cemetery)
         self.button_cem_add.grid(row=4, column=0, columnspan=2)
+
+    def get_cem_entry(self) -> list:
+        return [
+            self.entry_cem_address.get(),
+            self.entry_cem_name.get(),
+            self.entry_cem_type.get()
+        ]
+
+    def update_cem_info(self) -> None:
+        self.listbox_cem_list.delete(0, tkinter.END)
+        for idx, item in enumerate(cemetery_list):
+            self.listbox_cem_list.insert(tkinter.END, f"{idx + 1}. {item.name} {item.type}")
+
+
+class CemeteryFunctions:
+    def __init__(self, GUI_instance: GUI):
+        self.gui = GUI_instance
+        pass
+    def add_cemetery(self) -> None:
+        info = self.gui.get_cem_entry()
+        new_cem = Cemetery(info[0], info[1], info[2])
+        cemetery_list.append(new_cem)
+        self.gui.update_cem_info()
 
 if __name__ == "__main__":
     test = GUI()
