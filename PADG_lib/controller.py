@@ -43,10 +43,28 @@ class CemeteryFunctions:
         info = self.gui.get_cem_entry()
         new_cem = Cemetery(info[0], info[1], info[2])
         cemetery_list.append(new_cem)
-        self.gui.update_cem_info()
+        self.gui.update_cem_info(cemetery_list)
         self.gui.clear_cem_form()
 
     def remove_cemetery(self) -> None:
         index = self.gui.get_active_cem_index()
         cemetery_list.pop(index)
-        self.gui.update_cem_info()
+        self.gui.update_cem_info(cemetery_list)
+
+    def edit_cemetery(self)  -> None:
+        cem_index = self.gui.get_active_cem_index()
+        edited_cem = cemetery_list[cem_index]
+        self.gui.fill_cem_form(edited_cem, cem_index)
+
+
+    def update_cemetery(self, index: int) -> None:
+        info = self.gui.get_cem_entry()
+        cem_index = index
+        edited_cem = cemetery_list[cem_index]
+        edited_cem.address = info[0]
+        edited_cem.name = info[1]
+        edited_cem.type = info[2]
+        self.gui.update_cem_info(cemetery_list)
+        self.gui.clear_cem_form()
+
+

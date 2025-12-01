@@ -29,10 +29,8 @@ class GUI(tkinter.Tk):
         self.button_remove_cem = tkinter.Button(self.frame_cem_list, text="Usuń cmentarz", command=self.cem_logic.remove_cemetery)
         self.button_remove_cem.grid(row=2, column=1)
 
-        self.button_edit_cem = tkinter.Button(self.frame_cem_list, text="Edytuj cmentarz")
-        self.button_edit_cem.grid(row=2, column=2)
-
-
+        self.button_insert_cem_info = tkinter.Button(self.frame_cem_list, text="Edytuj cmentarz", command=self.cem_logic.edit_cemetery)
+        self.button_insert_cem_info.grid(row=2, column=2)
 
         # Form
         self.label_cem_form = tkinter.Label(self.frame_cem_form, text="Dodawanie cmentarza")
@@ -63,9 +61,9 @@ class GUI(tkinter.Tk):
             self.entry_cem_type.get()
         ]
 
-    def update_cem_info(self) -> None:
+    def update_cem_info(self, cem_list: list) -> None:
         self.listbox_cem_list.delete(0, tkinter.END)
-        for idx, item in enumerate(cemetery_list):
+        for idx, item in enumerate(cem_list):
             self.listbox_cem_list.insert(tkinter.END, f"{idx + 1}. {item.name} {item.type}")
 
     def clear_cem_form(self):
@@ -79,3 +77,11 @@ class GUI(tkinter.Tk):
         if selected:
             return selected[0]
         return -1
+
+    def fill_cem_form(self, edited_cem: list, index: int) -> None:
+        self.clear_cem_form()
+        self.entry_cem_address.insert(0, edited_cem.address)
+        self.entry_cem_name.insert(0, edited_cem.name)
+        self.entry_cem_type.set(edited_cem.type)
+        i = index
+        self.button_cem_add.config(text="Zapisz zmiany", command=lambda: self.cem_logic.update_cemetery(i))
