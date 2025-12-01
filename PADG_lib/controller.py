@@ -45,3 +45,8 @@ class CemeteryFunctions:
         cemetery_list.append(new_cem)
         self.gui.update_cem_info()
         self.gui.clear_cem_form()
+
+    def remove_cemetery(self) -> None:
+        index = self.gui.get_active_cem_index()
+        cemetery_list.pop(index)
+        self.gui.update_cem_info()

@@ -26,7 +26,7 @@ class GUI(tkinter.Tk):
         self.listbox_cem_list = tkinter.Listbox(self.frame_cem_list, width=40)
         self.listbox_cem_list.grid(row=1, column=0, columnspan=3)
 
-        self.button_remove_cem = tkinter.Button(self.frame_cem_list, text="Usuń cmentarz")
+        self.button_remove_cem = tkinter.Button(self.frame_cem_list, text="Usuń cmentarz", command=self.cem_logic.remove_cemetery)
         self.button_remove_cem.grid(row=2, column=1)
 
         self.button_edit_cem = tkinter.Button(self.frame_cem_list, text="Edytuj cmentarz")
@@ -45,7 +45,7 @@ class GUI(tkinter.Tk):
 
         self.label_cem_type = tkinter.Label(self.frame_cem_form, text="Typ:")
         self.label_cem_type.grid(row=2, column=0)
-        self.entry_cem_type = ttk.Combobox(self.frame_cem_form, values=["komunalny", "żydowski", "prawosławny", "inny"])
+        self.entry_cem_type = ttk.Combobox(self.frame_cem_form, values=["komunalny","rzymskokatolicki", "ewangelicki", "żydowski", "prawosławny", "inny"])
         self.entry_cem_type.grid(row=2, column=1)
 
         self.label_cem_address = tkinter.Label(self.frame_cem_form, text="Adres:")
@@ -73,3 +73,9 @@ class GUI(tkinter.Tk):
         self.entry_cem_address.delete(0, tkinter.END)
         self.entry_cem_type.set('')
         self.entry_cem_name.focus()
+
+    def get_active_cem_index(self) -> int:
+        selected = self.listbox_cem_list.curselection()
+        if selected:
+            return selected[0]
+        return -1
