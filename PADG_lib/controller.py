@@ -1,10 +1,12 @@
 from PADG_lib.model import cemetery_list
 
 
-class Object:
+class __Object:
     def __init__(self, address: str):
         self.address: str = address
         self.coords :list = self.get_coord_OSM()
+        self.marker = None
+        self.color: str = None
 
     def get_coord_OSM(self) -> list[float]:
         import requests
@@ -26,11 +28,12 @@ class Object:
 
 
 
-class Cemetery(Object):
+class Cemetery(__Object):
     def __init__(self, address: str, name: str, type: str):
         super().__init__(address)
         self.name: str = name
         self.type: str = type
+        self.color: str = "blue"
 
 
 
@@ -42,12 +45,14 @@ class CemeteryFunctions:
     def add_cemetery(self) -> None:
         info = self.gui.get_cem_entry()
         new_cem = Cemetery(info[0], info[1], info[2])
+        new_cem.marker = self.gui.set_marker(new_cem.coords[0], new_cem.coords[1], new_cem.name, new_cem.color)
         cemetery_list.append(new_cem)
         self.gui.update_cem_info(cemetery_list)
         self.gui.clear_cem_form()
 
     def remove_cemetery(self) -> None:
         index = self.gui.get_active_cem_index()
+        cemetery_list[index].marker.delete()
         cemetery_list.pop(index)
         self.gui.update_cem_info(cemetery_list)
 
