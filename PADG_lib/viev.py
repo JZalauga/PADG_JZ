@@ -1,5 +1,8 @@
 import tkinter
 from tkinter import ttk
+
+from win32cryptcon import szOID_ENCRYPTED_KEY_HASH
+
 from PADG_lib.controller import CemeteryFunctions
 from PADG_lib.model import cemetery_list
 
@@ -97,3 +100,9 @@ class GUI(tkinter.Tk):
         self.entry_cem_type.set(edited_cem.type)
         i = index
         self.button_cem_add.config(text="Zapisz zmiany", command=lambda: self.cem_logic.update_cemetery(i))
+
+    def set_marker(self, latitude: float, longitude: float, text: str, color: str) -> None:
+        marker = self.map_widget.set_marker(latitude, longitude, text, marker_color_outside=color)
+        self.map_widget.set_position(latitude, longitude)
+        self.map_widget.set_zoom(12)
+        return marker
