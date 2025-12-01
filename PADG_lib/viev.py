@@ -67,3 +67,9 @@ class GUI(tkinter.Tk):
         self.listbox_cem_list.delete(0, tkinter.END)
         for idx, item in enumerate(cemetery_list):
             self.listbox_cem_list.insert(tkinter.END, f"{idx + 1}. {item.name} {item.type}")
+
+    def clear_cem_form(self):
+        self.entry_cem_name.delete(0, tkinter.END)
+        self.entry_cem_address.delete(0, tkinter.END)
+        self.entry_cem_type.set('')
+        self.entry_cem_name.focus()

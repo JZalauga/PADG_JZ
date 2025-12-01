@@ -44,3 +44,4 @@ class CemeteryFunctions:
         new_cem = Cemetery(info[0], info[1], info[2])
         cemetery_list.append(new_cem)
         self.gui.update_cem_info()
+        self.gui.clear_cem_form()
