@@ -23,18 +23,17 @@ class GUI(tkinter.Tk):
         self.frame_list.grid(row=0, column=0, sticky="nw")
 
         # Listbo
-        self.label_cem_list = tkinter.Label(self.frame_list, text="Lista obiektów")
-        self.label_cem_list.grid(row=0, column=0, columnspan=3)
-
         self.label_choose_user = tkinter.Label(self.frame_list, text="Wybierz obiekt:")
-        self.label_choose_user.grid(row=1, column=0)
+        self.label_choose_user.grid(row=0, column=0, sticky="sw")
         self.entry_choose_user = ttk.Combobox(self.frame_list,
-                                              values=["cmentarze"])
+                                              values=["cmentarze", "pracownicy"])
 
-        self.entry_choose_user.grid(row=1, column=1, columnspan=3,)
+        self.entry_choose_user.grid(row=0, column=1, columnspan=4,sticky="ew")
 
         self.entry_choose_user.bind("<<ComboboxSelected>>", lambda event: self.__user_check())
 
+        self.label_cem_list = tkinter.Label(self.frame_list, text="Lista obiektów")
+        self.label_cem_list.grid(row=1, column=0, columnspan=3)
 
         self.listbox_list = tkinter.Listbox(self.frame_list)
         self.listbox_list.grid(row=2, column=0, columnspan=3)
@@ -73,7 +72,37 @@ class GUI(tkinter.Tk):
         self.button_cem_add = tkinter.Button(self.frame_cem_form, text="Dodaj cmentarz",
                                              command=self.cem_logic.add_cemetery)
         self.button_cem_add.grid(row=4, column=0, columnspan=2)
-        
+
+    def __create_worker_view(self):
+        self.frame_worker_form = tkinter.Frame(self)
+        self.frame_worker_form.grid(row=0, column=1, padx=10, sticky="w")
+
+        self.label_cem_form = tkinter.Label(self.frame_worker_form, text="Dodawanie pracownika cmentarza")
+        self.label_cem_form.grid(row=0, column=0, columnspan=2)
+
+        self.label_worker_name = tkinter.Label(self.frame_worker_form, text="Imie:")
+        self.label_worker_name.grid(row=1, column=0)
+        self.entry_worker_name = tkinter.Entry(self.frame_worker_form)
+        self.entry_worker_name.grid(row=1, column=1, pady=2, sticky="ew")
+
+        self.label_worker_surname = tkinter.Label(self.frame_worker_form, text="Nazwisko:")
+        self.label_worker_surname.grid(row=2, column=0)
+        self.entry_worker_surname = tkinter.Entry(self.frame_worker_form)
+        self.entry_worker_surname.grid(row=2, column=1, pady=2, sticky="ew")
+
+        self.label_worker_address = tkinter.Label(self.frame_worker_form, text="Adres:")
+        self.label_worker_address.grid(row=3, column=0)
+        self.entry_worker_address = tkinter.Entry(self.frame_worker_form)
+        self.entry_worker_address.grid(row=3, column=1, pady=2, sticky="ew")
+
+        self.label_worker_address = tkinter.Label(self.frame_worker_form, text="Wiek:")
+        self.label_worker_address.grid(row=4, column=0)
+        self.entry_worker_address = tkinter.Entry(self.frame_worker_form)
+        self.entry_worker_address.grid(row=4, column=1, pady=2, sticky="ew")
+
+        self.button_worker_add = tkinter.Button(self.frame_worker_form, text="Dodaj cmentarz",)
+        self.button_worker_add.grid(row=5, column=0, columnspan=2)
+    
     def __create_map_view(self):
         import tkintermapview
         self.frame_map = tkinter.Frame(self)
@@ -83,11 +112,20 @@ class GUI(tkinter.Tk):
         self.map_widget.grid(row=1, column=0, sticky="sw")
         self.map_widget.set_position(52.0, 21.0)
         self.map_widget.set_zoom(6)
+    def delete_form_views(self):
+        if hasattr(self, 'frame_cem_form'):
+            self.frame_cem_form.destroy()
+        if hasattr(self, 'frame_worker_form'):
+            self.frame_worker_form.destroy()
 
     def __user_check(self):
+        self.delete_form_views()
         if self.entry_choose_user.get() == "cmentarze":
             self.user = "cemetery"
             self.__create_cem_view()
+        if self.entry_choose_user.get() == "pracownicy":
+            self.user = "worker"
+            self.__create_worker_view()
         else:
             self.user = ""
 
