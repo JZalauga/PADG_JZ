@@ -11,7 +11,9 @@ class GUI(tkinter.Tk):
         super().__init__()
         self.title("PADG_JZ")
         self.geometry("1025x600")
-        #self.resizable(0,0)
+
+        self.user: str = "cemetery"
+
         self.cem_logic = CemeteryFunctions(self)
 
 
@@ -28,8 +30,8 @@ class GUI(tkinter.Tk):
         # Listbo
         self.label_cem_list = tkinter.Label(self.frame_cem_list, text="Lista obiektów")
         self.label_cem_list.grid(row=0, column=0, columnspan=3)
-        self.listbox_cem_list = tkinter.Listbox(self.frame_cem_list)
-        self.listbox_cem_list.grid(row=1, column=0, columnspan=3)
+        self.listbox_list = tkinter.Listbox(self.frame_cem_list)
+        self.listbox_list.grid(row=1, column=0, columnspan=3)
 
         self.button_remove_cem = tkinter.Button(self.frame_cem_list, text="Usuń cmentarz", command=self.cem_logic.remove_cemetery)
         self.button_remove_cem.grid(row=2, column=1)
@@ -69,37 +71,44 @@ class GUI(tkinter.Tk):
         self.map_widget.set_position(52.0, 21.0)
         self.map_widget.set_zoom(6)
 
-    def get_cem_entry(self) -> list:
-        return [
-            self.entry_cem_address.get(),
-            self.entry_cem_name.get(),
-            self.entry_cem_type.get()
-        ]
+    def get_entry(self) -> list:
+        if self.user == "cemetery":
+            return [
+                self.entry_cem_address.get(),
+                self.entry_cem_name.get(),
+                self.entry_cem_type.get()
+            ]
+        else :
+            return []
 
-    def update_cem_info(self, cem_list: list) -> None:
-        self.listbox_cem_list.delete(0, tkinter.END)
-        for idx, item in enumerate(cem_list):
-            self.listbox_cem_list.insert(tkinter.END, f"{idx + 1}. {item.name} {item.type}")
+    def update_info(self, cem_list: list) -> None:
+        self.listbox_list.delete(0, tkinter.END)
+        if self.user == "cemetery":
+            for idx, item in enumerate(cem_list):
+                self.listbox_list.insert(tkinter.END, f"{idx + 1}. {item.name} {item.type}")
 
-    def clear_cem_form(self):
-        self.entry_cem_name.delete(0, tkinter.END)
-        self.entry_cem_address.delete(0, tkinter.END)
-        self.entry_cem_type.set('')
-        self.entry_cem_name.focus()
+    def clear_form(self):
+        if self.user == "cemetery":
+            self.entry_cem_name.delete(0, tkinter.END)
+            self.entry_cem_address.delete(0, tkinter.END)
+            self.entry_cem_type.set('')
+            self.entry_cem_name.focus()
 
-    def get_active_cem_index(self) -> int:
-        selected = self.listbox_cem_list.curselection()
+    def get_active_index(self) -> int:
+        selected = self.listbox_list.curselection()
         if selected:
             return selected[0]
         return -1
 
-    def fill_cem_form(self, edited_cem: list, index: int) -> None:
-        self.clear_cem_form()
-        self.entry_cem_address.insert(0, edited_cem.address)
-        self.entry_cem_name.insert(0, edited_cem.name)
-        self.entry_cem_type.set(edited_cem.type)
+    def fill_form(self, edited_cem: object, index: int) -> None:
+        self.clear_form()
         i = index
-        self.button_cem_add.config(text="Zapisz zmiany", command=lambda: self.cem_logic.update_cemetery(i))
+        if self.user == "cemetery":
+            self.entry_cem_address.insert(0, edited_cem.address)
+            self.entry_cem_name.insert(0, edited_cem.name)
+            self.entry_cem_type.set(edited_cem.type)
+
+            self.button_cem_add.config(text="Zapisz zmiany", command=lambda: self.cem_logic.update_cemetery(i))
 
     def set_marker(self, latitude: float, longitude: float, text: str, color: str) -> None:
         marker = self.map_widget.set_marker(latitude, longitude, text, marker_color_outside=color)

@@ -43,27 +43,27 @@ class CemeteryFunctions:
         self.gui = GUI_instance
         pass
     def add_cemetery(self) -> None:
-        info = self.gui.get_cem_entry()
+        info = self.gui.get_entry()
         new_cem = Cemetery(info[0], info[1], info[2])
         new_cem.marker = self.gui.set_marker(new_cem.coords[0], new_cem.coords[1], new_cem.name, new_cem.color)
         cemetery_list.append(new_cem)
-        self.gui.update_cem_info(cemetery_list)
-        self.gui.clear_cem_form()
+        self.gui.update_info(cemetery_list)
+        self.gui.clear_form()
 
     def remove_cemetery(self) -> None:
-        index = self.gui.get_active_cem_index()
+        index = self.gui.get_active_index()
         cemetery_list[index].marker.delete()
         cemetery_list.pop(index)
-        self.gui.update_cem_info(cemetery_list)
+        self.gui.update_info(cemetery_list)
 
     def edit_cemetery(self)  -> None:
-        cem_index = self.gui.get_active_cem_index()
+        cem_index = self.gui.get_active_index()
         edited_cem = cemetery_list[cem_index]
-        self.gui.fill_cem_form(edited_cem, cem_index)
+        self.gui.fill_form(edited_cem, cem_index)
 
 
     def update_cemetery(self, index: int) -> None:
-        info = self.gui.get_cem_entry()
+        info = self.gui.get_entry()
         edited_cem = cemetery_list[index]
         edited_cem.address = info[0]
         edited_cem.name = info[1]
@@ -73,7 +73,7 @@ class CemeteryFunctions:
         edited_cem.coords = edited_cem.get_coord_OSM()
         edited_cem.marker = self.gui.set_marker(edited_cem.coords[0], edited_cem.coords[1], edited_cem.name, edited_cem.color)
 
-        self.gui.update_cem_info(cemetery_list)
-        self.gui.clear_cem_form()
+        self.gui.update_info(cemetery_list)
+        self.gui.clear_form()
 
 
