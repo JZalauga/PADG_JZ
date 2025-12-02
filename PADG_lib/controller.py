@@ -1,4 +1,6 @@
-from PADG_lib.model import cemetery_list
+from win32comext.ifilter.ifiltercon import IFILTER_INIT_FILTER_OWNED_VALUE_OK
+
+from PADG_lib.model import cemetery_list, workers_list
 
 
 class __Object:
@@ -35,6 +37,14 @@ class Cemetery(__Object):
         self.type: str = type
         self.color: str = "blue"
 
+class Worker(__Object):
+    def __init__(self, address: str, name: str, surname: str, cemetery: str, age: int):
+        super().__init__(address)
+        self.name: str = name
+        self.surname: str = surname
+        self.cemetery: str = cemetery
+        self.age: int = age
+        self.color: str = "red"
 
 
 
@@ -43,28 +53,28 @@ class CemeteryFunctions:
         self.gui = GUI_instance
         pass
     def add_cemetery(self) -> None:
-        info = self.gui.get_cem_entry()
+        info = self.gui.get_entry()
         new_cem = Cemetery(info[0], info[1], info[2])
         new_cem.marker = self.gui.set_marker(new_cem.coords[0], new_cem.coords[1], new_cem.name, new_cem.color)
         cemetery_list.append(new_cem)
-        self.gui.update_cem_info(cemetery_list)
-        self.gui.clear_cem_form()
+        self.gui.update_info(cemetery_list)
+        self.gui.clear_form()
 
     def remove_cemetery(self) -> None:
-        index = self.gui.get_active_cem_index()
+        index = self.gui.get_active_index()
         cemetery_list[index].marker.delete()
         cemetery_list.pop(index)
-        self.gui.update_cem_info(cemetery_list)
+        self.gui.update_info(cemetery_list)
 
     def edit_cemetery(self)  -> None:
-        cem_index = self.gui.get_active_cem_index()
-        edited_cem = cemetery_list[cem_index]
-        self.gui.fill_cem_form(edited_cem, cem_index)
+        cem_index = self.gui.get_active_index()
+        edited_cem= cemetery_list[cem_index]
+        self.gui.fill_form(edited_cem, cem_index)
 
 
     def update_cemetery(self, index: int) -> None:
-        info = self.gui.get_cem_entry()
-        edited_cem = cemetery_list[index]
+        info = self.gui.get_entry()
+        edited_cem= cemetery_list[index]
         edited_cem.address = info[0]
         edited_cem.name = info[1]
         edited_cem.type = info[2]
@@ -73,7 +83,49 @@ class CemeteryFunctions:
         edited_cem.coords = edited_cem.get_coord_OSM()
         edited_cem.marker = self.gui.set_marker(edited_cem.coords[0], edited_cem.coords[1], edited_cem.name, edited_cem.color)
 
-        self.gui.update_cem_info(cemetery_list)
-        self.gui.clear_cem_form()
+        self.gui.update_info(cemetery_list)
+        self.gui.clear_form()
 
+    def cemetery_view(self) -> None:
+        self.gui.update_info(cemetery_list)
 
+class WorkerFunctions:
+    def __init__(self, GUI_instance):
+        self.gui = GUI_instance
+
+    def add_worker(self) -> None:
+        info: list = self.gui.get_entry()
+        new_cem = Worker(info[0], info[1], info[2], info[3], info[4])
+        new_cem.marker = self.gui.set_marker(new_cem.coords[0], new_cem.coords[1], new_cem.name, new_cem.color)
+        workers_list.append(new_cem)
+        self.gui.update_info(workers_list)
+        self.gui.clear_form()
+
+    def remove_worker(self) -> None:
+        index = self.gui.get_active_index()
+        workers_list[index].marker.delete()
+        workers_list.pop(index)
+        self.gui.update_info(workers_list)
+
+    def edit_worker(self)  -> None:
+        index = self.gui.get_active_index()
+        edited_worker = workers_list[index]
+        self.gui.fill_form(edited_worker, index)
+
+    def update_worker(self, index: int) -> None:
+        info = self.gui.get_entry()
+        edited_worker =  workers_list[index]
+        edited_worker.address = info[0]
+        edited_worker.name = info[1]
+        edited_worker.surname = info[2]
+        edited_worker.cemetery = info[3]
+        edited_worker.age = info[4]
+        if edited_worker.marker:
+            edited_worker.marker.delete()
+        edited_worker.coords = edited_worker.get_coord_OSM()
+        edited_worker.marker = self.gui.set_marker(edited_worker.coords[0], edited_worker.coords[1], edited_worker.name, edited_worker.color)
+
+        self.gui.update_info(workers_list)
+        self.gui.clear_form()
+    def worker_view(self) -> None:
+        self.gui.update_info(workers_list)
