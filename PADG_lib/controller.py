@@ -88,6 +88,11 @@ class CemeteryFunctions:
 
     def cemetery_view(self) -> None:
         self.gui.update_info(cemetery_list)
+        for cemetery in cemetery_list:
+            cemetery.marker = self.gui.set_marker(cemetery.coords[0], cemetery.coords[1], cemetery.name, cemetery.color)
+        for worker in workers_list:
+            if worker.marker:
+                worker.marker.delete()
 
 class WorkerFunctions:
     def __init__(self, GUI_instance):
@@ -129,3 +134,8 @@ class WorkerFunctions:
         self.gui.clear_form()
     def worker_view(self) -> None:
         self.gui.update_info(workers_list)
+        for worker in workers_list:
+            worker.marker = self.gui.set_marker(worker.coords[0], worker.coords[1], worker.name, worker.color)
+        for cemetery in cemetery_list:
+            if cemetery.marker:
+                cemetery.marker.delete()

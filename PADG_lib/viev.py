@@ -28,7 +28,6 @@ class GUI(tkinter.Tk):
         self.label_choose_user.grid(row=0, column=0, sticky="sw")
         self.entry_choose_user = ttk.Combobox(self.frame_list,
                                               values=["cmentarze", "pracownicy"])
-
         self.entry_choose_user.grid(row=0, column=1, columnspan=4,sticky="ew")
 
         self.entry_choose_user.bind("<<ComboboxSelected>>", lambda event: self.__user_check())
