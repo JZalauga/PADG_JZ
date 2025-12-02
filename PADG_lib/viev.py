@@ -156,7 +156,7 @@ class GUI(tkinter.Tk):
         self.button_client_add = tkinter.Button(self.frame_client_form, text="Dodaj klienta", command= self.client_logic.add_client)
         self.button_client_add.grid(row=7, column=0, columnspan=2)
 
-        self.button_edit.config(text="Edytuj klienta", )
+        self.button_edit.config(text="Edytuj klienta", command=self.client_logic.edit_client)
         self.button_remove.config(text="Usuń klienta",command= self.client_logic.remove_client)
 
     def __create_map_view(self):
@@ -270,6 +270,7 @@ class GUI(tkinter.Tk):
             self.entry_cem_type.set(edited_cem.type)
 
             self.button_cem_add.config(text="Zapisz zmiany", command=lambda: self.cem_logic.update_cemetery(i))
+
         if self.entry_choose_user.get() == "pracownicy":
             self.entry_worker_address.insert(0, edited_cem.address)
             self.entry_worker_name.insert(0, edited_cem.name)
@@ -278,6 +279,18 @@ class GUI(tkinter.Tk):
             self.entry_worker_age.insert(0, edited_cem.age)
 
             self.button_worker_add.config(text="Zapisz zmiany", command=lambda: self.worker_logic.update_worker(i))
+
+        if self.entry_choose_user.get() == "klienci":
+            self.entry_client_name.insert(0, edited_cem.name)
+            self.entry_client_type.set(edited_cem.client_type)
+            self.entry_client_address.insert(0,edited_cem.address)
+            self.entry_client_nip.insert(0, edited_cem.nip)
+            self.entry_client_phone.insert(0, edited_cem.phone)
+            self.entry_client_cem.insert(0, edited_cem.cemetery)
+
+            self.button_client_add.config(text="Zapisz zmiany", command = lambda: self.client_logic.update_worker(i))
+
+
 
     def set_marker(self, latitude: float, longitude: float, text: str, color: str) -> None:
         marker = self.map_widget.set_marker(latitude, longitude, text, marker_color_outside=color)

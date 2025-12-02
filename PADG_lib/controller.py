@@ -167,3 +167,20 @@ class ClientFunctions:
         index = self.gui.get_active_index()
         clients_list.pop(index)
         self.gui.update_info(clients_list)
+
+    def edit_client(self) -> None:
+        index = self.gui.get_active_index()
+        editeded_worker = clients_list[index]
+        self.gui.fill_form(editeded_worker, index)
+
+    def update_worker(self, index: int) -> None:
+        info = self.gui.get_entry()
+        edited_client = clients_list[index]
+        edited_client.address = info[0]
+        edited_client.name = info[1]
+        edited_client.client_type = info[2]
+        edited_client.nip = info[3]
+        edited_client.phone = info[4]
+        edited_client.cemetery = info[5]
+        self.gui.update_info(clients_list)
+        self.gui.clear_form()
