@@ -1,8 +1,9 @@
 import tkinter
 from tkinter import ttk
 
+from click import command
 
-from PADG_lib.controller import CemeteryFunctions, WorkerFunctions
+from PADG_lib.controller import CemeteryFunctions, WorkerFunctions, ClientFunctions
 
 
 class GUI(tkinter.Tk):
@@ -14,6 +15,7 @@ class GUI(tkinter.Tk):
 
         self.cem_logic = CemeteryFunctions(self)
         self.worker_logic = WorkerFunctions(self)
+        self.client_logic = ClientFunctions(self)
 
         self.__create_map_view()
         self.__create_widgets()
@@ -151,7 +153,7 @@ class GUI(tkinter.Tk):
         self.entry_client_cem = tkinter.Entry(self.frame_client_form)
         self.entry_client_cem.grid(row=6, column=1, pady=2, sticky="ew")
 
-        self.button_client_add = tkinter.Button(self.frame_client_form, text="Dodaj klienta", )
+        self.button_client_add = tkinter.Button(self.frame_client_form, text="Dodaj klienta", command= self.client_logic.add_client)
         self.button_client_add.grid(row=7, column=0, columnspan=2)
 
         self.button_edit.config(text="Edytuj klienta", )
@@ -207,6 +209,15 @@ class GUI(tkinter.Tk):
                 self.entry_worker_cem.get(),
                 int(self.entry_worker_age.get())
             ]
+        if self.entry_choose_user.get() == "klienci":
+            return [
+                self.entry_client_address.get(),
+                self.entry_client_name.get(),
+                self.entry_client_type.get(),
+                int(self.entry_client_nip.get()),
+                int(self.entry_client_phone.get()),
+                self.entry_client_cem.get()
+            ]
         else :
             return ["nie", "działa", "Aluzyjna 23G Warszawa", "cemetery"]
 
@@ -218,6 +229,9 @@ class GUI(tkinter.Tk):
         if self.entry_choose_user.get() == "pracownicy":
             for idx, item in enumerate(object_list):
                 self.listbox_list.insert(tkinter.END, f"{idx + 1}. {item.name} {item.surname}")
+        if self.entry_choose_user.get() == "klienci":
+            for idx, item in enumerate(object_list):
+                self.listbox_list.insert(tkinter.END, f"{idx + 1}. {item.name}")
 
     def clear_form(self):
         if self.entry_choose_user.get() == "cmentarze":
@@ -232,6 +246,14 @@ class GUI(tkinter.Tk):
             self.entry_worker_age.delete(0, tkinter.END)
             self.entry_worker_cem.delete(0, tkinter.END)
             self.entry_worker_name.focus()
+        if self.entry_choose_user.get() == "klienci":
+            self.entry_client_address.delete(0, tkinter.END)
+            self.entry_client_name.delete(0, tkinter.END)
+            self.entry_client_type.set('')
+            self.entry_client_nip.delete(0, tkinter.END)
+            self.entry_client_phone.delete(0, tkinter.END)
+            self.entry_client_cem.delete(0, tkinter.END)
+            self.entry_client_name.focus()
 
     def get_active_index(self) -> int:
         selected = self.listbox_list.curselection()

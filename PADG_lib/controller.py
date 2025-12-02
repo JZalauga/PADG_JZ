@@ -1,6 +1,6 @@
 from win32comext.ifilter.ifiltercon import IFILTER_INIT_FILTER_OWNED_VALUE_OK
 
-from PADG_lib.model import cemetery_list, workers_list
+from PADG_lib.model import cemetery_list, workers_list, clients_list
 
 
 class __Object:
@@ -49,10 +49,10 @@ class Worker(__Object):
 
 
 class Client(__Object):
-    def __init__(self, adress:str, name:str, type:str, nip: int, phone: int, cemetery: str):
+    def __init__(self, adress:str, name:str, client_type:str, nip: int, phone: int, cemetery: str):
         super().__init__(adress)
         self.name: str = name
-        self.type: str = type
+        self.client_type: str = client_type
         self.nip: int = nip
         self.phone: int = phone
         self.cemetery: str = cemetery
@@ -151,3 +151,14 @@ class WorkerFunctions:
         for cemetery in cemetery_list:
             if cemetery.marker:
                 cemetery.marker.delete()
+
+class ClientFunctions:
+    def __init__(self, GUI_instance):
+        self.gui = GUI_instance
+
+    def add_client(self) -> None:
+        info = self.gui.get_entry()
+        new_client = Client(info[0], info[1], info[2], info[3], info[4], info[5])
+        clients_list.append(new_client)
+        self.gui.update_info(clients_list)
+        self.gui.clear_form()
