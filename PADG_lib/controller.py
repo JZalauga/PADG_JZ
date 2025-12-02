@@ -1,3 +1,5 @@
+from win32comext.ifilter.ifiltercon import IFILTER_INIT_FILTER_OWNED_VALUE_OK
+
 from PADG_lib.model import cemetery_list, workers_list
 
 
@@ -66,7 +68,7 @@ class CemeteryFunctions:
 
     def edit_cemetery(self)  -> None:
         cem_index = self.gui.get_active_index()
-        edited_workr= cemetery_list[cem_index]
+        edited_cem= cemetery_list[cem_index]
         self.gui.fill_form(edited_cem, cem_index)
 
 
@@ -83,6 +85,9 @@ class CemeteryFunctions:
 
         self.gui.update_info(cemetery_list)
         self.gui.clear_form()
+
+    def cemetery_view(self) -> None:
+        self.gui.update_info(cemetery_list)
 
 class WorkerFunctions:
     def __init__(self, GUI_instance):
@@ -122,3 +127,5 @@ class WorkerFunctions:
 
         self.gui.update_info(workers_list)
         self.gui.clear_form()
+    def worker_view(self) -> None:
+        self.gui.update_info(workers_list)

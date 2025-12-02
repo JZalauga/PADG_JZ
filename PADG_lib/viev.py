@@ -10,8 +10,7 @@ class GUI(tkinter.Tk):
         super().__init__()
         self.title("PADG_JZ")
         self.geometry("1025x600")
-
-        self.user: str = "cmentarze"
+        self.object = None
 
         self.cem_logic = CemeteryFunctions(self)
         self.worker_logic = WorkerFunctions(self)
@@ -24,7 +23,7 @@ class GUI(tkinter.Tk):
         self.frame_list = tkinter.Frame(self)
         self.frame_list.grid(row=0, column=0, sticky="nw")
 
-        # Listbo
+        # Listbox
         self.label_choose_user = tkinter.Label(self.frame_list, text="Wybierz obiekt:")
         self.label_choose_user.grid(row=0, column=0, sticky="sw")
         self.entry_choose_user = ttk.Combobox(self.frame_list,
@@ -133,12 +132,15 @@ class GUI(tkinter.Tk):
 
     def __user_check(self):
         self.delete_form_views()
+        #self.listbox_list.delete(0, tkinter.END)
         if self.entry_choose_user.get() == "cmentarze":
-            self.user = "cemetery"
+            self.object = "cmentarze"
             self.__create_cem_view()
+            self.cem_logic.cemetery_view()
         if self.entry_choose_user.get() == "pracownicy":
-            self.user = "worker"
+            self.object = "pracownicy"
             self.__create_worker_view()
+            self.worker_logic.worker_view()
         else:
             self.user = ""
 
