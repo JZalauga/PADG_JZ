@@ -27,7 +27,7 @@ class GUI(tkinter.Tk):
         self.label_choose_user = tkinter.Label(self.frame_list, text="Wybierz obiekt:")
         self.label_choose_user.grid(row=0, column=0, sticky="sw")
         self.entry_choose_user = ttk.Combobox(self.frame_list,
-                                              values=["cmentarze", "pracownicy"])
+                                              values=["cmentarze", "pracownicy", "klienci"])
         self.entry_choose_user.grid(row=0, column=1, columnspan=4,sticky="ew")
 
         self.entry_choose_user.bind("<<ComboboxSelected>>", lambda event: self.__user_check())
@@ -113,7 +113,50 @@ class GUI(tkinter.Tk):
 
         self.button_edit.config(text="Edytuj pracownika", command=self.worker_logic.edit_worker)
         self.button_remove.config(text="Usuń pracownika", command=self.worker_logic.remove_worker)
-    
+
+    def __create_client_view(self):
+        self.frame_client_form = tkinter.Frame(self)
+        self.frame_client_form.grid(row=0, column=1, padx=10, sticky="w")
+
+        self.label_cem_form = tkinter.Label(self.frame_client_form, text="Dodawanie klienta cmentarza")
+        self.label_cem_form.grid(row=0, column=0, columnspan=2)
+
+        self.label_client_name = tkinter.Label(self.frame_client_form, text="Nazwa:")
+        self.label_client_name.grid(row=1, column=0)
+        self.entry_client_name = tkinter.Entry(self.frame_client_form)
+        self.entry_client_name.grid(row=1, column=1, pady=2, sticky="ew")
+
+        self.label_client_type = tkinter.Label(self.frame_client_form, text="Typ działalności:")
+        self.label_client_type.grid(row=2, column=0)
+        self.entry_client_type = ttk.Combobox(self.frame_client_form, values=["usługi pogrzebowe", "sprzedaż nagrobków", "kwiaciarnia", "inne"])
+        self.entry_client_type.grid(row=2, column=1, pady=2, sticky="ew")
+
+        self.label_client_address = tkinter.Label(self.frame_client_form, text="Adres:")
+        self.label_client_address.grid(row=3, column=0)
+        self.entry_client_address = tkinter.Entry(self.frame_client_form)
+        self.entry_client_address.grid(row=3, column=1, pady=2, sticky="ew")
+
+        self.label_client_nip = tkinter.Label(self.frame_client_form, text="Nip:")
+        self.label_client_nip.grid(row=4, column=0)
+        self.entry_client_nip = tkinter.Entry(self.frame_client_form)
+        self.entry_client_nip.grid(row=4, column=1, pady=2, sticky="ew")
+
+        self.label_client_phone = tkinter.Label(self.frame_client_form, text="numer telefonu:")
+        self.label_client_phone.grid(row=5, column=0)
+        self.entry_client_phone = tkinter.Entry(self.frame_client_form)
+        self.entry_client_phone.grid(row=5, column=1, pady=2, sticky="ew")
+
+        self.label_client_cem = tkinter.Label(self.frame_client_form, text="Cmentarz:")
+        self.label_client_cem.grid(row=6, column=0)
+        self.entry_client_cem = tkinter.Entry(self.frame_client_form)
+        self.entry_client_cem.grid(row=6, column=1, pady=2, sticky="ew")
+
+        self.button_client_add = tkinter.Button(self.frame_client_form, text="Dodaj klienta", )
+        self.button_client_add.grid(row=7, column=0, columnspan=2)
+
+        self.button_edit.config(text="Edytuj klienta", )
+        self.button_remove.config(text="Usuń klienta",)
+
     def __create_map_view(self):
         import tkintermapview
         self.frame_map = tkinter.Frame(self)
@@ -128,6 +171,8 @@ class GUI(tkinter.Tk):
             self.frame_cem_form.destroy()
         if hasattr(self, 'frame_worker_form'):
             self.frame_worker_form.destroy()
+        if hasattr(self, 'frame_client_form'):
+            self.frame_client_form.destroy()
 
     def __user_check(self):
         self.delete_form_views()
@@ -140,6 +185,10 @@ class GUI(tkinter.Tk):
             self.object = "pracownicy"
             self.__create_worker_view()
             self.worker_logic.worker_view()
+        if self.entry_choose_user.get() == "klienci":
+            self.object = "klienci"
+            self.__create_client_view()
+            #self.client_logic.client_view()
         else:
             self.user = ""
 
