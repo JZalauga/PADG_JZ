@@ -157,7 +157,7 @@ class GUI(tkinter.Tk):
         self.button_client_add.grid(row=7, column=0, columnspan=2)
 
         self.button_edit.config(text="Edytuj klienta", )
-        self.button_remove.config(text="Usuń klienta",)
+        self.button_remove.config(text="Usuń klienta",command= self.client_logic.remove_client)
 
     def __create_map_view(self):
         import tkintermapview

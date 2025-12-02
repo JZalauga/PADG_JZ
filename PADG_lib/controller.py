@@ -162,3 +162,8 @@ class ClientFunctions:
         clients_list.append(new_client)
         self.gui.update_info(clients_list)
         self.gui.clear_form()
+
+    def remove_client(self) -> None:
+        index = self.gui.get_active_index()
+        clients_list.pop(index)
+        self.gui.update_info(clients_list)
