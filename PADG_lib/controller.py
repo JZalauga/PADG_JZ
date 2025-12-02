@@ -37,6 +37,7 @@ class Cemetery(__Object):
         self.type: str = type
         self.color: str = "blue"
 
+
 class Worker(__Object):
     def __init__(self, address: str, name: str, surname: str, cemetery: str, age: int):
         super().__init__(address)
@@ -45,6 +46,17 @@ class Worker(__Object):
         self.cemetery: str = cemetery
         self.age: int = age
         self.color: str = "red"
+
+
+class Client(__Object):
+    def __init__(self, adress:str, name:str, type:str, nip: int, phone: int, cemetery: str):
+        super().__init__(adress)
+        self.name: str = name
+        self.type: str = type
+        self.nip: int = nip
+        self.phone: int = phone
+        self.cemetery: str = cemetery
+        self.color: str = "green"
 
 
 
