@@ -181,6 +181,7 @@ class GUI(tkinter.Tk):
         self.delete_form_views()
         self.cem_logic.cemetery_remove_markers()
         self.worker_logic.worker_remove_markers()
+        self.client_logic.client_remove_markers()
         if self.entry_choose_user.get() == "cmentarze":
             self.object = "cmentarze"
             self.__create_cem_view()
