@@ -1,8 +1,10 @@
 import tkinter
 from tkinter import ttk
+from turtledemo.paint import switchupdown
 
+from click import command
 
-from PADG_lib.controller import CemeteryFunctions, WorkerFunctions
+from PADG_lib.controller import CemeteryFunctions, WorkerFunctions, ClientFunctions
 
 
 class GUI(tkinter.Tk):
@@ -14,6 +16,7 @@ class GUI(tkinter.Tk):
 
         self.cem_logic = CemeteryFunctions(self)
         self.worker_logic = WorkerFunctions(self)
+        self.client_logic = ClientFunctions(self)
 
         self.__create_map_view()
         self.__create_widgets()
@@ -27,7 +30,7 @@ class GUI(tkinter.Tk):
         self.label_choose_user = tkinter.Label(self.frame_list, text="Wybierz obiekt:")
         self.label_choose_user.grid(row=0, column=0, sticky="sw")
         self.entry_choose_user = ttk.Combobox(self.frame_list,
-                                              values=["cmentarze", "pracownicy"])
+                                              values=["cmentarze", "pracownicy", "klienci"])
         self.entry_choose_user.grid(row=0, column=1, columnspan=4,sticky="ew")
 
         self.entry_choose_user.bind("<<ComboboxSelected>>", lambda event: self.__user_check())
@@ -113,7 +116,50 @@ class GUI(tkinter.Tk):
 
         self.button_edit.config(text="Edytuj pracownika", command=self.worker_logic.edit_worker)
         self.button_remove.config(text="Usuń pracownika", command=self.worker_logic.remove_worker)
-    
+
+    def __create_client_view(self):
+        self.frame_client_form = tkinter.Frame(self)
+        self.frame_client_form.grid(row=0, column=1, padx=10, sticky="w")
+
+        self.label_cem_form = tkinter.Label(self.frame_client_form, text="Dodawanie klienta cmentarza")
+        self.label_cem_form.grid(row=0, column=0, columnspan=2)
+
+        self.label_client_name = tkinter.Label(self.frame_client_form, text="Nazwa:")
+        self.label_client_name.grid(row=1, column=0)
+        self.entry_client_name = tkinter.Entry(self.frame_client_form)
+        self.entry_client_name.grid(row=1, column=1, pady=2, sticky="ew")
+
+        self.label_client_type = tkinter.Label(self.frame_client_form, text="Typ działalności:")
+        self.label_client_type.grid(row=2, column=0)
+        self.entry_client_type = ttk.Combobox(self.frame_client_form, values=["usługi pogrzebowe", "sprzedaż nagrobków", "kwiaciarnia", "inne"])
+        self.entry_client_type.grid(row=2, column=1, pady=2, sticky="ew")
+
+        self.label_client_address = tkinter.Label(self.frame_client_form, text="Adres:")
+        self.label_client_address.grid(row=3, column=0)
+        self.entry_client_address = tkinter.Entry(self.frame_client_form)
+        self.entry_client_address.grid(row=3, column=1, pady=2, sticky="ew")
+
+        self.label_client_nip = tkinter.Label(self.frame_client_form, text="Nip:")
+        self.label_client_nip.grid(row=4, column=0)
+        self.entry_client_nip = tkinter.Entry(self.frame_client_form)
+        self.entry_client_nip.grid(row=4, column=1, pady=2, sticky="ew")
+
+        self.label_client_phone = tkinter.Label(self.frame_client_form, text="numer telefonu:")
+        self.label_client_phone.grid(row=5, column=0)
+        self.entry_client_phone = tkinter.Entry(self.frame_client_form)
+        self.entry_client_phone.grid(row=5, column=1, pady=2, sticky="ew")
+
+        self.label_client_cem = tkinter.Label(self.frame_client_form, text="Cmentarz:")
+        self.label_client_cem.grid(row=6, column=0)
+        self.entry_client_cem = tkinter.Entry(self.frame_client_form)
+        self.entry_client_cem.grid(row=6, column=1, pady=2, sticky="ew")
+
+        self.button_client_add = tkinter.Button(self.frame_client_form, text="Dodaj klienta", command= self.client_logic.add_client)
+        self.button_client_add.grid(row=7, column=0, columnspan=2)
+
+        self.button_edit.config(text="Edytuj klienta", command=self.client_logic.edit_client)
+        self.button_remove.config(text="Usuń klienta",command= self.client_logic.remove_client)
+
     def __create_map_view(self):
         import tkintermapview
         self.frame_map = tkinter.Frame(self)
@@ -128,18 +174,25 @@ class GUI(tkinter.Tk):
             self.frame_cem_form.destroy()
         if hasattr(self, 'frame_worker_form'):
             self.frame_worker_form.destroy()
+        if hasattr(self, 'frame_client_form'):
+            self.frame_client_form.destroy()
 
     def __user_check(self):
         self.delete_form_views()
-        #self.listbox_list.delete(0, tkinter.END)
+        self.cem_logic.cemetery_remove_markers()
+        self.worker_logic.worker_remove_markers()
         if self.entry_choose_user.get() == "cmentarze":
             self.object = "cmentarze"
             self.__create_cem_view()
-            self.cem_logic.cemetery_view()
+            self.cem_logic.cemetery_show()
         if self.entry_choose_user.get() == "pracownicy":
             self.object = "pracownicy"
             self.__create_worker_view()
-            self.worker_logic.worker_view()
+            self.worker_logic.worker_show()
+        if self.entry_choose_user.get() == "klienci":
+            self.object = "klienci"
+            self.__create_client_view()
+            self.client_logic.client_show()
         else:
             self.user = ""
 
@@ -158,8 +211,17 @@ class GUI(tkinter.Tk):
                 self.entry_worker_cem.get(),
                 int(self.entry_worker_age.get())
             ]
+        if self.entry_choose_user.get() == "klienci":
+            return [
+                self.entry_client_address.get(),
+                self.entry_client_name.get(),
+                self.entry_client_type.get(),
+                int(self.entry_client_nip.get()),
+                int(self.entry_client_phone.get()),
+                self.entry_client_cem.get()
+            ]
         else :
-            return ["nie", "działa", "Aluzyjna 23G Warszawa", "cemetery"]
+            return []
 
     def update_info(self, object_list: list) -> None:
         self.listbox_list.delete(0, tkinter.END)
@@ -169,6 +231,9 @@ class GUI(tkinter.Tk):
         if self.entry_choose_user.get() == "pracownicy":
             for idx, item in enumerate(object_list):
                 self.listbox_list.insert(tkinter.END, f"{idx + 1}. {item.name} {item.surname}")
+        if self.entry_choose_user.get() == "klienci":
+            for idx, item in enumerate(object_list):
+                self.listbox_list.insert(tkinter.END, f"{idx + 1}. {item.name}")
 
     def clear_form(self):
         if self.entry_choose_user.get() == "cmentarze":
@@ -183,6 +248,14 @@ class GUI(tkinter.Tk):
             self.entry_worker_age.delete(0, tkinter.END)
             self.entry_worker_cem.delete(0, tkinter.END)
             self.entry_worker_name.focus()
+        if self.entry_choose_user.get() == "klienci":
+            self.entry_client_address.delete(0, tkinter.END)
+            self.entry_client_name.delete(0, tkinter.END)
+            self.entry_client_type.set('')
+            self.entry_client_nip.delete(0, tkinter.END)
+            self.entry_client_phone.delete(0, tkinter.END)
+            self.entry_client_cem.delete(0, tkinter.END)
+            self.entry_client_name.focus()
 
     def get_active_index(self) -> int:
         selected = self.listbox_list.curselection()
@@ -199,6 +272,7 @@ class GUI(tkinter.Tk):
             self.entry_cem_type.set(edited_cem.type)
 
             self.button_cem_add.config(text="Zapisz zmiany", command=lambda: self.cem_logic.update_cemetery(i))
+
         if self.entry_choose_user.get() == "pracownicy":
             self.entry_worker_address.insert(0, edited_cem.address)
             self.entry_worker_name.insert(0, edited_cem.name)
@@ -207,6 +281,18 @@ class GUI(tkinter.Tk):
             self.entry_worker_age.insert(0, edited_cem.age)
 
             self.button_worker_add.config(text="Zapisz zmiany", command=lambda: self.worker_logic.update_worker(i))
+
+        if self.entry_choose_user.get() == "klienci":
+            self.entry_client_name.insert(0, edited_cem.name)
+            self.entry_client_type.set(edited_cem.client_type)
+            self.entry_client_address.insert(0,edited_cem.address)
+            self.entry_client_nip.insert(0, edited_cem.nip)
+            self.entry_client_phone.insert(0, edited_cem.phone)
+            self.entry_client_cem.insert(0, edited_cem.cemetery)
+
+            self.button_client_add.config(text="Zapisz zmiany", command = lambda: self.client_logic.update_worker(i))
+
+
 
     def set_marker(self, latitude: float, longitude: float, text: str, color: str) -> None:
         marker = self.map_widget.set_marker(latitude, longitude, text, marker_color_outside=color)

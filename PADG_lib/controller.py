@@ -1,6 +1,6 @@
 from win32comext.ifilter.ifiltercon import IFILTER_INIT_FILTER_OWNED_VALUE_OK
 
-from PADG_lib.model import cemetery_list, workers_list
+from PADG_lib.model import cemetery_list, workers_list, clients_list
 
 
 class __Object:
@@ -37,6 +37,7 @@ class Cemetery(__Object):
         self.type: str = type
         self.color: str = "blue"
 
+
 class Worker(__Object):
     def __init__(self, address: str, name: str, surname: str, cemetery: str, age: int):
         super().__init__(address)
@@ -45,6 +46,17 @@ class Worker(__Object):
         self.cemetery: str = cemetery
         self.age: int = age
         self.color: str = "red"
+
+
+class Client(__Object):
+    def __init__(self, adress:str, name:str, client_type:str, nip: int, phone: int, cemetery: str):
+        super().__init__(adress)
+        self.name: str = name
+        self.client_type: str = client_type
+        self.nip: int = nip
+        self.phone: int = phone
+        self.cemetery: str = cemetery
+        self.color: str = "green"
 
 
 
@@ -86,13 +98,14 @@ class CemeteryFunctions:
         self.gui.update_info(cemetery_list)
         self.gui.clear_form()
 
-    def cemetery_view(self) -> None:
+    def cemetery_remove_markers(self):
+        for cemetery in cemetery_list:
+            if cemetery.marker:
+                cemetery.marker.delete()
+    def cemetery_show(self) -> None:
         self.gui.update_info(cemetery_list)
         for cemetery in cemetery_list:
             cemetery.marker = self.gui.set_marker(cemetery.coords[0], cemetery.coords[1], cemetery.name, cemetery.color)
-        for worker in workers_list:
-            if worker.marker:
-                worker.marker.delete()
 
 class WorkerFunctions:
     def __init__(self, GUI_instance):
@@ -132,10 +145,48 @@ class WorkerFunctions:
 
         self.gui.update_info(workers_list)
         self.gui.clear_form()
-    def worker_view(self) -> None:
+
+    def worker_remove_markers(self) -> None:
+        for worker in workers_list:
+            if worker.marker:
+                worker.marker.delete()
+    def worker_show(self) -> None:
         self.gui.update_info(workers_list)
         for worker in workers_list:
             worker.marker = self.gui.set_marker(worker.coords[0], worker.coords[1], worker.name, worker.color)
-        for cemetery in cemetery_list:
-            if cemetery.marker:
-                cemetery.marker.delete()
+
+class ClientFunctions:
+    def __init__(self, GUI_instance):
+        self.gui = GUI_instance
+
+    def add_client(self) -> None:
+        info = self.gui.get_entry()
+        new_client = Client(info[0], info[1], info[2], info[3], info[4], info[5])
+        clients_list.append(new_client)
+        self.gui.update_info(clients_list)
+        self.gui.clear_form()
+
+    def remove_client(self) -> None:
+        index = self.gui.get_active_index()
+        clients_list.pop(index)
+        self.gui.update_info(clients_list)
+
+    def edit_client(self) -> None:
+        index = self.gui.get_active_index()
+        editeded_worker = clients_list[index]
+        self.gui.fill_form(editeded_worker, index)
+
+    def update_worker(self, index: int) -> None:
+        info = self.gui.get_entry()
+        edited_client = clients_list[index]
+        edited_client.address = info[0]
+        edited_client.name = info[1]
+        edited_client.client_type = info[2]
+        edited_client.nip = info[3]
+        edited_client.phone = info[4]
+        edited_client.cemetery = info[5]
+        self.gui.update_info(clients_list)
+        self.gui.clear_form()
+
+    def client_show(self) -> None:
+        self.gui.update_info(clients_list)
