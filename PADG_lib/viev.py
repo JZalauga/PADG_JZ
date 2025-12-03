@@ -1,8 +1,5 @@
 import tkinter
 from tkinter import ttk
-from turtledemo.paint import switchupdown
-
-from click import command
 
 from PADG_lib.controller import CemeteryFunctions, WorkerFunctions, ClientFunctions
 
@@ -218,7 +215,7 @@ class GUI(tkinter.Tk):
                 self.entry_client_name.get(),
                 self.entry_client_type.get(),
                 int(self.entry_client_nip.get()),
-                int(self.entry_client_phone.get()),
+                self.entry_client_phone.get(),
                 self.entry_client_cem.get()
             ]
         else :
@@ -264,34 +261,34 @@ class GUI(tkinter.Tk):
             return selected[0]
         return -1
 
-    def fill_form(self, edited_cem: object, index: int) -> None:
+    def fill_form(self, edited_obj: object, index: int) -> None:
         self.clear_form()
         i = index
         if self.entry_choose_user.get() == "cmentarze":
-            self.entry_cem_address.insert(0, edited_cem.address)
-            self.entry_cem_name.insert(0, edited_cem.name)
-            self.entry_cem_type.set(edited_cem.type)
+            self.entry_cem_address.insert(0, edited_obj.address)
+            self.entry_cem_name.insert(0, edited_obj.name)
+            self.entry_cem_type.set(edited_obj.type)
 
             self.button_cem_add.config(text="Zapisz zmiany", command=lambda: self.cem_logic.update_cemetery(i))
 
         if self.entry_choose_user.get() == "pracownicy":
-            self.entry_worker_address.insert(0, edited_cem.address)
-            self.entry_worker_name.insert(0, edited_cem.name)
-            self.entry_worker_surname.insert(0, edited_cem.surname)
-            self.entry_worker_cem.insert(0, edited_cem.cemetery)
-            self.entry_worker_age.insert(0, edited_cem.age)
+            self.entry_worker_address.insert(0, edited_obj.address)
+            self.entry_worker_name.insert(0, edited_obj.name)
+            self.entry_worker_surname.insert(0, edited_obj.surname)
+            self.entry_worker_cem.insert(0, edited_obj.cemetery)
+            self.entry_worker_age.insert(0, edited_obj.age)
 
             self.button_worker_add.config(text="Zapisz zmiany", command=lambda: self.worker_logic.update_worker(i))
 
         if self.entry_choose_user.get() == "klienci":
-            self.entry_client_name.insert(0, edited_cem.name)
-            self.entry_client_type.set(edited_cem.client_type)
-            self.entry_client_address.insert(0,edited_cem.address)
-            self.entry_client_nip.insert(0, edited_cem.nip)
-            self.entry_client_phone.insert(0, edited_cem.phone)
-            self.entry_client_cem.insert(0, edited_cem.cemetery)
+            self.entry_client_name.insert(0, edited_obj.name)
+            self.entry_client_type.set(edited_obj.client_type)
+            self.entry_client_address.insert(0,edited_obj.address)
+            self.entry_client_nip.insert(0, edited_obj.nip)
+            self.entry_client_phone.insert(0, edited_obj.phone)
+            self.entry_client_cem.insert(0, edited_obj.cemetery)
 
-            self.button_client_add.config(text="Zapisz zmiany", command = lambda: self.client_logic.update_worker(i))
+            self.button_client_add.config(text="Zapisz zmiany", command = lambda: self.client_logic.update_client(i))
 
 
 

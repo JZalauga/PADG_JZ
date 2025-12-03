@@ -1,5 +1,3 @@
-from win32comext.ifilter.ifiltercon import IFILTER_INIT_FILTER_OWNED_VALUE_OK
-
 from PADG_lib.model import cemetery_list, workers_list, clients_list
 
 
@@ -49,8 +47,8 @@ class Worker(__Object):
 
 
 class Client(__Object):
-    def __init__(self, adress:str, name:str, client_type:str, nip: int, phone: int, cemetery: str):
-        super().__init__(adress)
+    def __init__(self, address:str, name:str, client_type:str, nip: int, phone: str, cemetery: str):
+        super().__init__(address)
         self.name: str = name
         self.client_type: str = client_type
         self.nip: int = nip
@@ -161,7 +159,7 @@ class ClientFunctions:
 
     def add_client(self) -> None:
         info = self.gui.get_entry()
-        new_client = Client(info[0], info[1], info[2], info[3], info[4], info[5])
+        new_client = Client(*info)
         new_client.marker = self.gui.set_marker(new_client.coords[0], new_client.coords[1], new_client.name, new_client.color)
         clients_list.append(new_client)
         self.gui.update_info(clients_list)
@@ -176,10 +174,10 @@ class ClientFunctions:
 
     def edit_client(self) -> None:
         index = self.gui.get_active_index()
-        editeded_worker = clients_list[index]
-        self.gui.fill_form(editeded_worker, index)
+        editeded_client = clients_list[index]
+        self.gui.fill_form(editeded_client, index)
 
-    def update_worker(self, index: int) -> None:
+    def update_client(self, index: int) -> None:
         info = self.gui.get_entry()
         edited_client = clients_list[index]
         edited_client.address = info[0]
