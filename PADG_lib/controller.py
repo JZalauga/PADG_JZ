@@ -162,12 +162,15 @@ class ClientFunctions:
     def add_client(self) -> None:
         info = self.gui.get_entry()
         new_client = Client(info[0], info[1], info[2], info[3], info[4], info[5])
+        new_client.marker = self.gui.set_marker(new_client.coords[0], new_client.coords[1], new_client.name, new_client.color)
         clients_list.append(new_client)
         self.gui.update_info(clients_list)
         self.gui.clear_form()
 
     def remove_client(self) -> None:
         index = self.gui.get_active_index()
+        if clients_list[index].marker:
+            clients_list[index].marker.delete()
         clients_list.pop(index)
         self.gui.update_info(clients_list)
 
@@ -185,8 +188,18 @@ class ClientFunctions:
         edited_client.nip = info[3]
         edited_client.phone = info[4]
         edited_client.cemetery = info[5]
+        if edited_client.marker:
+            edited_client.marker.delete()
+        edited_client.coords = edited_client.get_coord_OSM()
+        edited_client.marker = self.gui.set_marker(edited_client.coords[0], edited_client.coords[1], edited_client.name, edited_client.color)
         self.gui.update_info(clients_list)
         self.gui.clear_form()
 
+    def client_remove_markers(self) -> None:
+        for client in clients_list:
+            if client.marker:
+                client.marker.delete()
     def client_show(self) -> None:
         self.gui.update_info(clients_list)
+        for client in clients_list:
+            client.marker = self.gui.set_marker(client.coords[0], client.coords[1], client.name, client.color)
