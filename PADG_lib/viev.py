@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import ttk
+from turtledemo.paint import switchupdown
 
 from click import command
 
@@ -178,19 +179,20 @@ class GUI(tkinter.Tk):
 
     def __user_check(self):
         self.delete_form_views()
-        #self.listbox_list.delete(0, tkinter.END)
+        self.cem_logic.cemetery_remove_markers()
+        self.worker_logic.worker_remove_markers()
         if self.entry_choose_user.get() == "cmentarze":
             self.object = "cmentarze"
             self.__create_cem_view()
-            self.cem_logic.cemetery_view()
+            self.cem_logic.cemetery_show()
         if self.entry_choose_user.get() == "pracownicy":
             self.object = "pracownicy"
             self.__create_worker_view()
-            self.worker_logic.worker_view()
+            self.worker_logic.worker_show()
         if self.entry_choose_user.get() == "klienci":
             self.object = "klienci"
             self.__create_client_view()
-            #self.client_logic.client_view()
+            self.client_logic.client_show()
         else:
             self.user = ""
 
@@ -219,7 +221,7 @@ class GUI(tkinter.Tk):
                 self.entry_client_cem.get()
             ]
         else :
-            return ["nie", "działa", "Aluzyjna 23G Warszawa", "cemetery"]
+            return []
 
     def update_info(self, object_list: list) -> None:
         self.listbox_list.delete(0, tkinter.END)

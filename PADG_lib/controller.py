@@ -98,13 +98,14 @@ class CemeteryFunctions:
         self.gui.update_info(cemetery_list)
         self.gui.clear_form()
 
-    def cemetery_view(self) -> None:
+    def cemetery_remove_markers(self):
+        for cemetery in cemetery_list:
+            if cemetery.marker:
+                cemetery.marker.delete()
+    def cemetery_show(self) -> None:
         self.gui.update_info(cemetery_list)
         for cemetery in cemetery_list:
             cemetery.marker = self.gui.set_marker(cemetery.coords[0], cemetery.coords[1], cemetery.name, cemetery.color)
-        for worker in workers_list:
-            if worker.marker:
-                worker.marker.delete()
 
 class WorkerFunctions:
     def __init__(self, GUI_instance):
@@ -144,13 +145,15 @@ class WorkerFunctions:
 
         self.gui.update_info(workers_list)
         self.gui.clear_form()
-    def worker_view(self) -> None:
+
+    def worker_remove_markers(self) -> None:
+        for worker in workers_list:
+            if worker.marker:
+                worker.marker.delete()
+    def worker_show(self) -> None:
         self.gui.update_info(workers_list)
         for worker in workers_list:
             worker.marker = self.gui.set_marker(worker.coords[0], worker.coords[1], worker.name, worker.color)
-        for cemetery in cemetery_list:
-            if cemetery.marker:
-                cemetery.marker.delete()
 
 class ClientFunctions:
     def __init__(self, GUI_instance):
@@ -184,3 +187,6 @@ class ClientFunctions:
         edited_client.cemetery = info[5]
         self.gui.update_info(clients_list)
         self.gui.clear_form()
+
+    def client_show(self) -> None:
+        self.gui.update_info(clients_list)
