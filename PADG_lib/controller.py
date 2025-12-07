@@ -37,7 +37,7 @@ class Cemetery(__Object):
 
 
 class Worker(__Object):
-    def __init__(self, address: str, name: str, surname: str, cemetery: str, age: int):
+    def __init__(self, address: str, name: str, surname: str, age: int, cemetery: str):
         super().__init__(address)
         self.name: str = name
         self.surname: str = surname
@@ -134,8 +134,8 @@ class WorkerFunctions:
         edited_worker.address = info[0]
         edited_worker.name = info[1]
         edited_worker.surname = info[2]
-        edited_worker.cemetery = info[3]
-        edited_worker.age = info[4]
+        edited_worker.age = info[3]
+        edited_worker.cemetery = info[4]
         if edited_worker.marker:
             edited_worker.marker.delete()
         edited_worker.coords = edited_worker.get_coord_OSM()
