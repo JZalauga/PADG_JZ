@@ -152,51 +152,14 @@ class GUI(tk.Tk):
         config["builder"](self.current_frame)
         config["show"]()
 
-    # def delete_form_views(self):
-    #     if hasattr(self, 'frame_cem_form'):
-    #         self.frame_cem_form.destroy()
-    #     if hasattr(self, 'frame_worker_form'):
-    #         self.frame_worker_form.destroy()
-    #     if hasattr(self, 'frame_client_form'):
-    #         self.frame_client_form.destroy()
-    #
-    # def __user_check(self):
-    #     self.delete_form_views()
-    #     self.cem_logic.cemetery_remove_markers()
-    #     self.worker_logic.worker_remove_markers()
-    #     self.client_logic.client_remove_markers()
-    #     if self.entry_choose_user.get() == "cmentarze":
-    #         self.object = "cmentarze"
-    #         self.__create_cem_view()
-    #         self.cem_logic.cemetery_show()
-    #     if self.entry_choose_user.get() == "pracownicy":
-    #         self.object = "pracownicy"
-    #         self.__create_worker_view()
-    #         self.worker_logic.worker_show()
-    #     if self.entry_choose_user.get() == "klienci":
-    #         self.object = "klienci"
-    #         self.__create_client_view()
-    #         self.client_logic.client_show()
-    #     else:
-    #         self.user = ""
-
     def get_entry(self) -> list:
         data = self.__user_config[self.current_object]["entries"]
         return [obj.get() for obj in data.values()]
 
     def update_info(self, object_list: list) -> None:
         self.listbox_list.delete(0, tk.END)
-        # if self.current_object == "cmentarze":
-        #     for idx, item in enumerate(object_list):
-        #         self.listbox_list.insert(tk.END,f"{idx + 1}. {item.name} {item.type if self.current_object == 'cmentarze' else ''}")
-        # if self.current_object == "pracownicy":
-        #     for idx, item in enumerate(object_list):
-        #         self.listbox_list.insert(tk.END,f"{idx + 1}. {item.name} {item.surname}")
-        # if self.current_object == "klienci":
-        #     for idx, item in enumerate(object_list):
-        #         self.listbox_list.insert(tk.END,f"{idx + 1}. {item.name}")
         for idx, item in enumerate(object_list):
-            self.listbox_list.insert(tk.END,f"{idx + 1}. {item.name} {item.type if self.current_object == 'cmentarze' else ''} {item.surname if self.current_object == "pracownicy" else ''}")
+            self.listbox_list.insert(tk.END,f"{idx + 1}. {item.name} {item.c_type if self.current_object == 'cmentarze' else ''} {item.surname if self.current_object == "pracownicy" else ''}")
 
     def clear_form(self):
         data = self.__user_config[self.current_object]["entries"]
@@ -218,7 +181,7 @@ class GUI(tk.Tk):
         if self.current_object == "cmentarze":
             entries["address"].insert(0, edited_obj.address)
             entries["name"].insert(0, edited_obj.name)
-            entries["type"].set(edited_obj.type)
+            entries["type"].set(edited_obj.c_type)
 
             self.button_cem_add.config(text="Zapisz zmiany", command=lambda: self.cem_logic.update_cemetery(index))
 
