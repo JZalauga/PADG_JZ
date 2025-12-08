@@ -168,7 +168,6 @@ class GUI(tk.Tk):
                 widget.delete(0, tk.END)
             elif isinstance(widget, ttk.Combobox):
                 widget.set('')
-        #self.form_entries["Nazwa"].focus_set()
 
     def get_active_index(self) -> int:
         selected = self.listbox_list.curselection()

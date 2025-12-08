@@ -118,7 +118,6 @@ class Controller:
         self.gui.update_info(self.data_list)
         for entity in self.data_list:
             entity.marker = self.gui.set_marker(entity.coords[0], entity.coords[1], entity.name, entity.color)
-        #self.gui.update_info(entity for entity in self.data_list)
 
     def remove_markers(self) -> None:
         for entity in self.data_list:
