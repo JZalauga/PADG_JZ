@@ -4,11 +4,11 @@ from PADG_lib.model import cemetery_list, workers_list, clients_list
 class __Object:
     def __init__(self, address: str):
         self.address: str = address
-        self.coords :list = self.get_coord_OSM()
-        self.marker = None
-        self.color: str = None
+        self.coords :list = self.get_coord_osm()
+        self.marker: object = None
+        self.color: str = ""
 
-    def get_coord_OSM(self) -> list[float]:
+    def get_coord_osm(self) -> list[float]:
         import requests
         url = "https://nominatim.openstreetmap.org/search"
         headers = {
@@ -25,19 +25,25 @@ class __Object:
         latitude = float(data[0]['lat'])
         longitude = float(data[0]['lon'])
         return [latitude, longitude]
+    def update_data(self, *args):
+        pass
 
 
 
 class Cemetery(__Object):
-    def __init__(self, address: str, name: str, type: str):
+    def __init__(self, address: str, name: str, c_type: str):
         super().__init__(address)
         self.name: str = name
-        self.type: str = type
+        self.c_type: str = c_type
         self.color: str = "blue"
 
+    def update_data(self, address, name, c_type):
+        self.address = address
+        self.name = name
+        self.c_type = c_type
 
 class Worker(__Object):
-    def __init__(self, address: str, name: str, surname: str, cemetery: str, age: int):
+    def __init__(self, address: str, name: str, surname: str, age: int, cemetery: str):
         super().__init__(address)
         self.name: str = name
         self.surname: str = surname
@@ -45,6 +51,12 @@ class Worker(__Object):
         self.age: int = age
         self.color: str = "red"
 
+    def update_data(self, address, name, surname, age, cemetery):
+        self.address = address
+        self.name = name
+        self.surname = surname
+        self.age = age
+        self.cemetery = cemetery
 
 class Client(__Object):
     def __init__(self, address:str, name:str, client_type:str, nip: int, phone: str, cemetery: str):
@@ -52,152 +64,130 @@ class Client(__Object):
         self.name: str = name
         self.client_type: str = client_type
         self.nip: int = nip
-        self.phone: int = phone
+        self.phone: str = phone
         self.cemetery: str = cemetery
         self.color: str = "green"
 
+    def update_data(self, address, name, client_type, nip, phone, cemetery):
+        self.address = address
+        self.name = name
+        self.client_type = client_type
+        self.nip = nip
+        self.phone = phone
+        self.cemetery = cemetery
 
 
-class CemeteryFunctions:
-    def __init__(self, GUI_instance):
-        self.gui = GUI_instance
-        pass
-    def add_cemetery(self) -> None:
-        info = self.gui.get_entry()
-        new_cem = Cemetery(info[0], info[1], info[2])
-        new_cem.marker = self.gui.set_marker(new_cem.coords[0], new_cem.coords[1], new_cem.name, new_cem.color)
-        cemetery_list.append(new_cem)
-        self.gui.update_info(cemetery_list)
+class Controller:
+    def __init__(self, gui_instance, data_list: list, entity_class):
+        self.gui = gui_instance
+        self.data_list = data_list
+        self.EntityClass = entity_class
+
+    def __refresh_marker(self, entity):
+        if entity.marker:
+            entity.marker.delete()
+        entity.coords = entity.get_coord_osm()
+        entity.marker = self.gui.set_marker(entity.coords[0], entity.coords[1], entity.name, entity.color)
+
+    def add(self):
+        entry = self.gui.get_entry()
+        new_entity = self.EntityClass(*entry)
+        self.__refresh_marker(new_entity)
+        self.data_list.append(new_entity)
+        self.gui.update_info(self.data_list)
         self.gui.clear_form()
 
-    def remove_cemetery(self) -> None:
+    def remove(self):
         index = self.gui.get_active_index()
-        cemetery_list[index].marker.delete()
-        cemetery_list.pop(index)
-        self.gui.update_info(cemetery_list)
+        self.data_list[index].marker.delete()
+        self.data_list.pop(index)
+        self.gui.update_info(self.data_list)
 
-    def edit_cemetery(self)  -> None:
-        cem_index = self.gui.get_active_index()
-        edited_cem= cemetery_list[cem_index]
-        self.gui.fill_form(edited_cem, cem_index)
-
-
-    def update_cemetery(self, index: int) -> None:
-        info = self.gui.get_entry()
-        edited_cem= cemetery_list[index]
-        edited_cem.address = info[0]
-        edited_cem.name = info[1]
-        edited_cem.type = info[2]
-        if edited_cem.marker:
-            edited_cem.marker.delete()
-        edited_cem.coords = edited_cem.get_coord_OSM()
-        edited_cem.marker = self.gui.set_marker(edited_cem.coords[0], edited_cem.coords[1], edited_cem.name, edited_cem.color)
-
-        self.gui.update_info(cemetery_list)
+    def edit(self):
+        index = self.gui.get_active_index()
+        edited_entity = self.data_list[index]
+        self.gui.fill_form(edited_entity, index)
+    def update(self, index: int):
+        entry = self.gui.get_entry()
+        edited_entity = self.data_list[index]
+        edited_entity.update_data(*entry)
+        self.__refresh_marker(edited_entity)
+        self.gui.update_info(self.data_list)
         self.gui.clear_form()
+    def show(self):
+        self.gui.update_info(self.data_list)
+        for entity in self.data_list:
+            entity.marker = self.gui.set_marker(entity.coords[0], entity.coords[1], entity.name, entity.color)
+        #self.gui.update_info(entity for entity in self.data_list)
+
+    def remove_markers(self) -> None:
+        for entity in self.data_list:
+            if entity.marker:
+                entity.marker.delete()
+
+class CemeteryFunctions(Controller):
+    def __init__(self, gui_instance):
+        super().__init__(gui_instance, cemetery_list, Cemetery)
+
+    def add_cemetery(self):
+        super().add()
+
+    def remove_cemetery(self):
+        super().remove()
+
+    def edit_cemetery(self):
+        super().edit()
+
+    def update_cemetery(self, index: int):
+        super().update(index)
+
+    def cemetery_show(self):
+        super().show()
 
     def cemetery_remove_markers(self):
-        for cemetery in cemetery_list:
-            if cemetery.marker:
-                cemetery.marker.delete()
-    def cemetery_show(self) -> None:
-        self.gui.update_info(cemetery_list)
-        for cemetery in cemetery_list:
-            cemetery.marker = self.gui.set_marker(cemetery.coords[0], cemetery.coords[1], cemetery.name, cemetery.color)
+        super().remove_markers()
 
-class WorkerFunctions:
-    def __init__(self, GUI_instance):
-        self.gui = GUI_instance
 
-    def add_worker(self) -> None:
-        info: list = self.gui.get_entry()
-        new_cem = Worker(info[0], info[1], info[2], info[3], info[4])
-        new_cem.marker = self.gui.set_marker(new_cem.coords[0], new_cem.coords[1], new_cem.name, new_cem.color)
-        workers_list.append(new_cem)
-        self.gui.update_info(workers_list)
-        self.gui.clear_form()
+class WorkerFunctions(Controller):
+    def __init__(self, gui_instance):
+        super().__init__(gui_instance, workers_list, Worker)
 
-    def remove_worker(self) -> None:
-        index = self.gui.get_active_index()
-        workers_list[index].marker.delete()
-        workers_list.pop(index)
-        self.gui.update_info(workers_list)
+    def add_worker(self):
+        super().add()
 
-    def edit_worker(self)  -> None:
-        index = self.gui.get_active_index()
-        edited_worker = workers_list[index]
-        self.gui.fill_form(edited_worker, index)
+    def remove_worker(self):
+        super().remove()
 
-    def update_worker(self, index: int) -> None:
-        info = self.gui.get_entry()
-        edited_worker =  workers_list[index]
-        edited_worker.address = info[0]
-        edited_worker.name = info[1]
-        edited_worker.surname = info[2]
-        edited_worker.cemetery = info[3]
-        edited_worker.age = info[4]
-        if edited_worker.marker:
-            edited_worker.marker.delete()
-        edited_worker.coords = edited_worker.get_coord_OSM()
-        edited_worker.marker = self.gui.set_marker(edited_worker.coords[0], edited_worker.coords[1], edited_worker.name, edited_worker.color)
+    def edit_worker(self):
+        super().edit()
 
-        self.gui.update_info(workers_list)
-        self.gui.clear_form()
+    def update_worker(self, index: int):
+        super().update(index)
 
-    def worker_remove_markers(self) -> None:
-        for worker in workers_list:
-            if worker.marker:
-                worker.marker.delete()
-    def worker_show(self) -> None:
-        self.gui.update_info(workers_list)
-        for worker in workers_list:
-            worker.marker = self.gui.set_marker(worker.coords[0], worker.coords[1], worker.name, worker.color)
+    def worker_show(self):
+        super().show()
 
-class ClientFunctions:
-    def __init__(self, GUI_instance):
-        self.gui = GUI_instance
+    def worker_remove_markers(self):
+        super().remove_markers()
 
-    def add_client(self) -> None:
-        info = self.gui.get_entry()
-        new_client = Client(*info)
-        new_client.marker = self.gui.set_marker(new_client.coords[0], new_client.coords[1], new_client.name, new_client.color)
-        clients_list.append(new_client)
-        self.gui.update_info(clients_list)
-        self.gui.clear_form()
+class ClientFunctions(Controller):
+    def __init__(self, gui_instance):
+        super().__init__(gui_instance, clients_list, Client)
 
-    def remove_client(self) -> None:
-        index = self.gui.get_active_index()
-        if clients_list[index].marker:
-            clients_list[index].marker.delete()
-        clients_list.pop(index)
-        self.gui.update_info(clients_list)
+    def add_client(self):
+        super().add()
 
-    def edit_client(self) -> None:
-        index = self.gui.get_active_index()
-        editeded_client = clients_list[index]
-        self.gui.fill_form(editeded_client, index)
+    def remove_client(self):
+        super().remove()
 
-    def update_client(self, index: int) -> None:
-        info = self.gui.get_entry()
-        edited_client = clients_list[index]
-        edited_client.address = info[0]
-        edited_client.name = info[1]
-        edited_client.client_type = info[2]
-        edited_client.nip = info[3]
-        edited_client.phone = info[4]
-        edited_client.cemetery = info[5]
-        if edited_client.marker:
-            edited_client.marker.delete()
-        edited_client.coords = edited_client.get_coord_OSM()
-        edited_client.marker = self.gui.set_marker(edited_client.coords[0], edited_client.coords[1], edited_client.name, edited_client.color)
-        self.gui.update_info(clients_list)
-        self.gui.clear_form()
+    def edit_client(self):
+        super().edit()
 
-    def client_remove_markers(self) -> None:
-        for client in clients_list:
-            if client.marker:
-                client.marker.delete()
-    def client_show(self) -> None:
-        self.gui.update_info(clients_list)
-        for client in clients_list:
-            client.marker = self.gui.set_marker(client.coords[0], client.coords[1], client.name, client.color)
+    def update_client(self, index: int):
+        super().update(index)
+
+    def client_show(self):
+        super().show()
+
+    def client_remove_markers(self):
+        super().remove_markers()
