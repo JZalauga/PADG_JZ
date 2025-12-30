@@ -1,11 +1,5 @@
 import psycopg2
 
-cemetery_list: list = []
-
-workers_list: list = []
-
-clients_list: list = []
-
 class __Object:
     def __init__(self, address: str, coords: list = None):
         self.address: str = address
@@ -229,12 +223,3 @@ class ClientRepository(Repository[Worker]):
         self.cursor.execute(SQL, (id, ))
         self.db_engine.commit()
 
-if __name__ == "__main__":
-    test = CemeteryRepository()
-    values = test.get_all()
-    for value in values:
-        print(value.index)
-        print(value.name)
-        print(value.c_type)
-        print(value.address)
-        print("-------------")
