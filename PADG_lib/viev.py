@@ -92,7 +92,11 @@ class GUI(tk.Tk):
         self.button_edit.config(text="Edytuj cmentarz", command=self.cem_logic.edit_cemetery)
         self.button_remove.config(text="Usuń cmentarz", command=self.cem_logic.remove_cemetery)
         self.worker_state = tk.IntVar()
+        self.client_state = tk.IntVar()
         self.button_show_workers = tk.Checkbutton(cem_frame, text="Pokaż pracowników", variable= self.worker_state, onvalue = 1, offvalue = 0, command= self.cemetery_workers)
+        self.button_show_workers.grid(row=5, column=0, columnspan=2)
+        self.button_show_workers = tk.Checkbutton(cem_frame, text="Pokaż klientów", variable=self.client_state,
+                                                  onvalue=1, offvalue=0, command=self.cemetery_clients)
         self.button_show_workers.grid(row=5, column=0, columnspan=2)
 
 
@@ -158,10 +162,15 @@ class GUI(tk.Tk):
         config["builder"](self.current_frame)
         config["show"]()
 
-    def cemetery_workers(self):
+    def cemetery_workers(self) -> None:
         selected_index = self.get_active_index()
         if selected_index != -1:
             self.cem_logic.get_cemetery_workers(selected_index, self.worker_state.get())
+
+    def cemetery_clients(self) -> None:
+        selected_index = self.get_active_index()
+        if selected_index != -1:
+            pass
 
 
 
