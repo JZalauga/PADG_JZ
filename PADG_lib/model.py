@@ -31,44 +31,33 @@ class __Object:
         latitude = float(data[0]['lat'])
         longitude = float(data[0]['lon'])
         return [latitude, longitude]
-    def update_data(self, *args):
-        pass
+
 
 
 class Cemetery(__Object):
-    def __init__(self, address: str, name: str, c_type: str, cemetery_id = None, coords = None):
+    def __init__(self, address: str, name: str, c_type: str, index = None, coords = None):
         super().__init__(address, coords= coords)
-        self.cemetery_id = cemetery_id
+        self.index = index
         self.name: str = name
         self.c_type: str = c_type
         self.color: str = "blue"
 
-    def update_data(self, address, name, c_type):
-        self.address = address
-        self.name = name
-        self.c_type = c_type
 
 class Worker(__Object):
-    def __init__(self, address: str, name: str, surname: str, age: int, cemetery: str, worker_id = None, coords = None):
+    def __init__(self, address: str, name: str, surname: str, age: int, cemetery: str, index = None, coords = None):
         super().__init__(address, coords = coords)
-        self.worker_id = worker_id
+        self.index = index
         self.name: str = name
         self.surname: str = surname
         self.cemetery: str = cemetery
         self.age: int = age
         self.color: str = "red"
 
-    def update_data(self, address, name, surname, age, cemetery):
-        self.address = address
-        self.name = name
-        self.surname = surname
-        self.age = age
-        self.cemetery = cemetery
 
 class Client(__Object):
-    def __init__(self, address:str, name:str, client_type:str, nip: int, phone: str, cemetery: str, client_id = None, coords= None):
+    def __init__(self, address:str, name:str, client_type:str, nip: int, phone: str, cemetery: str, index = None, coords= None):
         super().__init__(address, coords= coords)
-        self.client_id = client_id
+        self.index = index
         self.name: str = name
         self.client_type: str = client_type
         self.nip: int = nip
@@ -85,13 +74,6 @@ class Client(__Object):
             "location": f"SRID=4326;POINT({self.coords[1]} {self.coords[0]})"
         }
 
-    def update_data(self, address, name, client_type, nip, phone, cemetery):
-        self.address = address
-        self.name = name
-        self.client_type = client_type
-        self.nip = nip
-        self.phone = phone
-        self.cemetery = cemetery
 
 
 class Repository[T]:
@@ -124,18 +106,17 @@ class CemeteryRepository(Repository[Cemetery]):
         )
         self.cursor = self.db_engine.cursor()
 
-
     def get(self, id: int) -> Cemetery:
-        SQL = "SELECT *, ST_X(location::geometry), ST_Y(location::geometry) FROM public.cemeteries WHERE cemetery_id= %s;"
+        SQL = "SELECT *, ST_X(location::geometry), ST_Y(location::geometry) FROM public.cemeteries WHERE cemetery_id = %s;"
         self.cursor.execute(SQL, (id,))
         entry = self.cursor.fetchone()
-        return Cemetery(cemetery_id= entry[0], address=entry[1],name=entry[2], c_type= entry[3],coords= [entry[-2], entry[-1]])
+        return Cemetery(index= entry[0], address=entry[1],name=entry[2], c_type= entry[3],coords= [entry[-2], entry[-1]])
 
     def get_all(self) -> list[Cemetery]:
         SQL = "SELECT *, ST_X(location::geometry), ST_Y(location::geometry) FROM public.cemeteries;"
         self.cursor.execute(SQL)
         entries = self.cursor.fetchall()
-        return [Cemetery(cemetery_id= entry[0], address=entry[1],name =  entry[2],c_type= entry[2], coords=[entry[-2], entry[-1]]) for entry in entries]
+        return [Cemetery(index= entry[0], address=entry[1],name = entry[2],c_type= entry[3], coords=[entry[-2], entry[-1]]) for entry in entries]
 
     def add(self, obj: Cemetery) -> None:
         SQL = "INSERT INTO public.cemeteries(address, name, type, location) VALUES (%s, %s, %s, 'SRID=4326;POINT(%s %s)');"
@@ -145,7 +126,7 @@ class CemeteryRepository(Repository[Cemetery]):
 
     def update(self, obj: Cemetery):
         SQL = "UPDATE public.cemeteries SET address= %s, name= %s, type= %s, location= 'SRID=4326;POINT(%s %s)' WHERE cemetery_id = %s;"
-        data = (obj.address, obj.name, obj.c_type, obj.coords[0], obj.coords[1], obj.cemetery_id)
+        data = (obj.address, obj.name, obj.c_type, obj.coords[0], obj.coords[1], obj.index)
         self.cursor.execute(SQL, data)
         self.db_engine.commit()
 
@@ -176,13 +157,13 @@ class WorkerRepository(Repository[Worker]):
         SQL = "SELECT *, ST_X(location::geometry), ST_Y(location::geometry) FROM public.workers WHERE worker_id= %s;"
         self.cursor.execute(SQL, (id,))
         entry = self.cursor.fetchone()
-        return Worker(worker_id=entry[0], address=entry[1],name=entry[2], surname= entry[3], age= entry[4], cemetery=entry[5],coords= [entry[-2], entry[-1]])
+        return Worker(index=entry[0], address=entry[1],name=entry[2], surname= entry[3], age= entry[4], cemetery=entry[5],coords= [entry[-2], entry[-1]])
 
     def get_all(self) -> list[Worker]:
         SQL = "SELECT *, ST_X(location::geometry), ST_Y(location::geometry) FROM public.workers;"
         self.cursor.execute(SQL)
         entries = self.cursor.fetchall()
-        return [Worker(worker_id=entry[0] ,address=entry[1],name=entry[2], surname= entry[3], age= entry[4], cemetery=entry[5],coords= [entry[-2], entry[-1]]) for entry in entries]
+        return [Worker(index=entry[0] ,address=entry[1],name=entry[2], surname= entry[3], age= entry[4], cemetery=entry[5],coords= [entry[-2], entry[-1]]) for entry in entries]
 
     def add(self, obj: Worker) -> None:
         SQL = "INSERT INTO public.workers(address, name, surname, age, cemetery, location) VALUES (%s, %s, %s, %s, %s, 'SRID=4326;POINT(%s %s)');"
@@ -192,7 +173,7 @@ class WorkerRepository(Repository[Worker]):
 
     def update(self, obj: Worker):
         SQL = "UPDATE public.workers SET address= %s, name= %s, surname= %s, age= %s, cemetery= %s, location= 'SRID=4326;POINT(%s %s)' WHERE worker_id= %s;"
-        data = (obj.address, obj.name, obj.surname, obj.age, obj.cemetery, obj.coords[0], obj.coords[1], obj.worker_id)
+        data = (obj.address, obj.name, obj.surname, obj.age, obj.cemetery, obj.coords[0], obj.coords[1], obj.index)
         self.cursor.execute(SQL, data)
         self.db_engine.commit()
 
@@ -223,13 +204,13 @@ class ClientRepository(Repository[Worker]):
         SQL = "SELECT *, ST_X(location::geometry), ST_Y(location::geometry) FROM public.clients WHERE client_id= %s;"
         self.cursor.execute(SQL, (id,))
         entry = self.cursor.fetchone()
-        return Client(client_id=entry[0], address= entry[1],name=entry[2], client_type=entry[3], nip=entry[4],phone=entry[5], cemetery=entry[6], coords=[entry[-2], entry[-1]])
+        return Client(index=entry[0], address= entry[1],name=entry[2], client_type=entry[3], nip=entry[4],phone=entry[5], cemetery=entry[6], coords=[entry[-2], entry[-1]])
 
     def get_all(self) -> list[Client]:
         SQL = "SELECT *, ST_X(location::geometry), ST_Y(location::geometry) FROM public.clients;"
         self.cursor.execute(SQL)
         entries = self.cursor.fetchall()
-        return [Client(client_id=entry[0], address= entry[1],name=entry[2], client_type=entry[3], nip=entry[4],phone=entry[5], cemetery=entry[6], coords=[entry[-2], entry[-1]]) for entry in entries]
+        return [Client(index=entry[0], address= entry[1],name=entry[2], client_type=entry[3], nip=entry[4],phone=entry[5], cemetery=entry[6], coords=[entry[-2], entry[-1]]) for entry in entries]
 
     def add(self, obj: Client) -> None:
         SQL = "INSERT INTO public.clients(address, name, type, nip, phone_number, cemetery, location) VALUES (%s, %s, %s, %s, %s, %s, 'SRID=4326;POINT(%s %s)');"
@@ -239,7 +220,7 @@ class ClientRepository(Repository[Worker]):
 
     def update(self, obj: Client) -> None:
         SQL = "UPDATE public.clients SET address= %s, name= %s, type = %s, nip = %s, phone_number = %s, cemetery= %s, location= 'SRID=4326;POINT(%s %s)' WHERE client_id= %s;"
-        data = (obj.address, obj.name,obj.client_type,obj.nip, obj.phone, obj.cemetery , obj.coords[0], obj.coords[1], obj.client_id)
+        data = (obj.address, obj.name,obj.client_type,obj.nip, obj.phone, obj.cemetery , obj.coords[0], obj.coords[1], obj.index)
         self.cursor.execute(SQL, data)
         self.db_engine.commit()
 
@@ -248,6 +229,12 @@ class ClientRepository(Repository[Worker]):
         self.cursor.execute(SQL, (id, ))
         self.db_engine.commit()
 
-
-
-
+if __name__ == "__main__":
+    test = CemeteryRepository()
+    values = test.get_all()
+    for value in values:
+        print(value.index)
+        print(value.name)
+        print(value.c_type)
+        print(value.address)
+        print("-------------")
