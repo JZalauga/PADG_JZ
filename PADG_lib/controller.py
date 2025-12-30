@@ -74,6 +74,9 @@ class CemeteryFunctions(Controller):
     def cemetery_remove_markers(self):
         super().remove_markers()
 
+    def get_cemetery_list(self) -> list:
+        return self.DataClass.get_all()
+
 
 class WorkerFunctions(Controller):
     def __init__(self, gui_instance):

@@ -52,7 +52,7 @@ class GUI(tk.Tk):
                                               values=["cmentarze", "pracownicy", "klienci"])
         self.entry_choose_user.grid(row=0, column=1, columnspan=4,sticky="ew")
 
-        self.entry_choose_user.bind("<<ComboboxSelected>>", lambda event: self.__user_check())
+        self.entry_choose_user.bind("<<ComboboxSelected>>", lambda event: self.__change_user())
 
         self.label_cem_list = tk.Label(self.frame_list, text="Lista obiektów")
         self.label_cem_list.grid(row=1, column=0, columnspan=3)
@@ -92,6 +92,7 @@ class GUI(tk.Tk):
         self.button_remove.config(text="Usuń cmentarz", command=self.cem_logic.remove_cemetery)
 
     def __create_worker_view(self, worker_frame: tk.Frame):
+        cemeteries_list = [cem.name for cem in self.__user_config["cmentarze"]["logic"].get_cemetery_list()]
 
         self.label_cem_form = tk.Label(worker_frame, text="Dodawanie pracownika cmentarza")
         self.label_cem_form.grid(row=0, column=0, columnspan=2)
@@ -100,7 +101,7 @@ class GUI(tk.Tk):
         entries["name"] = self.__create_form(worker_frame, 1, "Imie")
         entries["surname"] = self.__create_form(worker_frame,2, "Nazwisko")
         entries["age"] = self.__create_form(worker_frame, 4, "Wiek")
-        entries["cemetery"] =  self.__create_form(worker_frame, 5, "Cmentarz")
+        entries["cemetery"] =  self.__create_form(worker_frame, 5, "Cmentarz", "combobox", cemeteries_list)
 
         self.button_worker_add = tk.Button(worker_frame, text="Dodaj pracownika", command=self.worker_logic.add_worker)
         self.button_worker_add.grid(row=6, column=0, columnspan=2)
@@ -109,17 +110,17 @@ class GUI(tk.Tk):
         self.button_remove.config(text="Usuń pracownika", command=self.worker_logic.remove_worker)
     #
     def __create_client_view(self, client_frame:tk.Frame):
+        cemeteries_list = [cem.name for cem in self.__user_config["cmentarze"]["logic"].get_cemetery_list()]
 
         self.label_cem_form = tk.Label(client_frame, text="Dodawanie klienta cmentarza")
         self.label_cem_form.grid(row=0, column=0, columnspan=2)
-
         entries = self.__user_config["klienci"]["entries"]
         entries["address"] = self.__create_form(client_frame,3, "Adres")
         entries["name"] = self.__create_form(client_frame,1, "Nazwa")
         entries["type"] = self.__create_form(client_frame,2, "Typ działalności", "combobox", ["usługi pogrzebowe", "sprzedaż nagrobków", "kwiaciarnia", "inne"])
         entries["nip"] = self.__create_form(client_frame,4, "Nip")
         entries["phone"] = self.__create_form(client_frame,5, "Numer telefonu")
-        entries["cemetery"] = self.__create_form(client_frame,6, "Cmentarz")
+        entries["cemetery"] = self.__create_form(client_frame,6, "Cmentarz", "combobox", cemeteries_list)
 
         self.button_client_add = tk.Button(client_frame, text="Dodaj klienta", command= self.client_logic.add_client)
         self.button_client_add.grid(row=7, column=0, columnspan=2)
@@ -142,7 +143,7 @@ class GUI(tk.Tk):
         self.worker_logic.worker_remove_markers()
         self.client_logic.client_remove_markers()
 
-    def __user_check(self):
+    def __change_user(self):
         self.__clean_view()
         self.current_frame = tk.Frame(self)
         self.current_frame.grid(row=0, column=1, padx=10, sticky="w")
