@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import tkintermapview
+from click import command
 
 from PADG_lib.controller import CemeteryFunctions, WorkerFunctions, ClientFunctions
 
@@ -90,9 +91,13 @@ class GUI(tk.Tk):
 
         self.button_edit.config(text="Edytuj cmentarz", command=self.cem_logic.edit_cemetery)
         self.button_remove.config(text="Usuń cmentarz", command=self.cem_logic.remove_cemetery)
+        self.worker_state = tk.IntVar()
+        self.button_show_workers = tk.Checkbutton(cem_frame, text="Pokaż pracowników", variable= self.worker_state, onvalue = 1, offvalue = 0, command= self.cemetery_workers)
+        self.button_show_workers.grid(row=5, column=0, columnspan=2)
+
 
     def __create_worker_view(self, worker_frame: tk.Frame):
-        cemeteries_list = [cem.name for cem in self.__user_config["cmentarze"]["logic"].get_cemetery_list()]
+        cemeteries_list = self.__user_config["cmentarze"]["logic"].get_cemetery_list()
 
         self.label_cem_form = tk.Label(worker_frame, text="Dodawanie pracownika cmentarza")
         self.label_cem_form.grid(row=0, column=0, columnspan=2)
@@ -110,7 +115,7 @@ class GUI(tk.Tk):
         self.button_remove.config(text="Usuń pracownika", command=self.worker_logic.remove_worker)
     #
     def __create_client_view(self, client_frame:tk.Frame):
-        cemeteries_list = [cem.name for cem in self.__user_config["cmentarze"]["logic"].get_cemetery_list()]
+        cemeteries_list = self.__user_config["cmentarze"]["logic"].get_cemetery_list()
 
         self.label_cem_form = tk.Label(client_frame, text="Dodawanie klienta cmentarza")
         self.label_cem_form.grid(row=0, column=0, columnspan=2)
@@ -125,7 +130,7 @@ class GUI(tk.Tk):
         self.button_client_add = tk.Button(client_frame, text="Dodaj klienta", command= self.client_logic.add_client)
         self.button_client_add.grid(row=7, column=0, columnspan=2)
 
-        self.button_edit.config(text="Edytuj klienta", command=self.client_logic.edit_client)
+        self.button_edit.config(text="Edytuj klienta",  command=self.client_logic.edit_client)
         self.button_remove.config(text="Usuń klienta",command= self.client_logic.remove_client)
 
     def __create_map_view(self):
@@ -152,6 +157,13 @@ class GUI(tk.Tk):
         config = self.__user_config[self.current_object]
         config["builder"](self.current_frame)
         config["show"]()
+
+    def cemetery_workers(self):
+        selected_index = self.get_active_index()
+        if selected_index != -1:
+            self.cem_logic.get_cemetery_workers(selected_index, self.worker_state.get())
+
+
 
     def get_entry(self) -> list:
         data = self.__user_config[self.current_object]["entries"]
