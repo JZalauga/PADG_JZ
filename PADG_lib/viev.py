@@ -1,4 +1,5 @@
 import tkinter as tk
+from multiprocessing.pool import worker
 from tkinter import ttk
 import tkintermapview
 
@@ -66,6 +67,8 @@ class GUI(tk.Tk):
 
         self.listbox_list = tk.Listbox(self.frame_list)
         self.listbox_list.grid(row=2, column=0, columnspan=3)
+        self.listbox_list.bind("<<ListboxSelect>>", lambda worker: self.cemetery_workers())
+        self.listbox_list.bind("<<ListboxSelect>>", lambda client: self.cemetery_clients())
         
 
         self.button_remove = tk.Button(self.frame_list)
