@@ -56,6 +56,7 @@ class CemeteryFunctions(Controller):
     def __init__(self, gui_instance):
         super().__init__(gui_instance, Cemetery, CemeteryRepository)
         self.workers_markers: list = []
+        self.clients_markers: list = []
 
     def add_cemetery(self):
         super().add()
@@ -77,6 +78,9 @@ class CemeteryFunctions(Controller):
         for marker in self.workers_markers:
             marker.delete()
         self.workers_markers.clear()
+        for marker in self.clients_markers:
+            marker.delete()
+        self.clients_markers.clear()
 
     def get_cemetery_list(self) -> list:
         return[cemetery.name for cemetery in self.DataClass.get_all()]
@@ -89,6 +93,15 @@ class CemeteryFunctions(Controller):
             for marker in self.workers_markers:
                 marker.delete()
             self.workers_markers.clear()
+
+    def get_cemetery_clients(self, index: int, state) -> None:
+        cemetery = self.DataClass.get_all()[index].name
+        if state == 1:
+            self.clients_markers = [self.gui.set_marker(value[1], value[2], value[0], "red") for value in self.DataClass.get_cemetery_clients(cemetery)]
+        else:
+            for marker in self.clients_markers:
+                marker.delete()
+            self.clients_markers.clear()
 
 
 class WorkerFunctions(Controller):
