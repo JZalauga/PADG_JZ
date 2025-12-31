@@ -135,6 +135,12 @@ class CemeteryRepository(Repository[Cemetery]):
         entries = self.cursor.fetchall()
         return [(entry[0], entry[1], entry[2]) for entry in entries]
 
+    def get_cemetery_clients(self, name: str):
+        SQL = "SELECT name, latitude, longitude FROM public.cemetery_client_view WHERE cemetery = %s;"
+        self.cursor.execute(SQL, (name,))
+        entries = self.cursor.fetchall()
+        return [(entry[0], entry[1], entry[2]) for entry in entries]
+
 class WorkerRepository(Repository[Worker]):
     def __init__(self):
         super().__init__()
