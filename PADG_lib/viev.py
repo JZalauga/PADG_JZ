@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import tkintermapview
-from click import command
 
 from PADG_lib.controller import CemeteryFunctions, WorkerFunctions, ClientFunctions
 
@@ -19,17 +18,24 @@ class GUI(tk.Tk):
         self.worker_logic = WorkerFunctions(self)
         self.client_logic = ClientFunctions(self)
 
+
+
         self.__setup_layout()
-        self.__create_map_view()
+
         self.__create_main_widgets()
 
-        self.__user_config = {
-            "cmentarze": {"logic": self.cem_logic, "builder": self.__create_cem_view, "show": self.cem_logic.cemetery_show,"entries": {}},
-            "pracownicy": {"logic": self.worker_logic, "builder": self.__create_worker_view, "show": self.worker_logic.worker_show, "entries": {}},
-            "klienci": {"logic": self.client_logic, "builder": self.__create_client_view, "show": self.client_logic.client_show, "entries": {}},
+        self.__create_map_view()
+
+        self._user_config = {
+            "cmentarze": {"logic": self.cem_logic, "builder": self.__create_cem_view,
+                          "show": self.cem_logic.cemetery_show, "entries": {}},
+            "pracownicy": {"logic": self.worker_logic, "builder": self.__create_worker_view,
+                           "show": self.worker_logic.worker_show, "entries": {}},
+            "klienci": {"logic": self.client_logic, "builder": self.__create_client_view,
+                        "show": self.client_logic.client_show, "entries": {}},
         }
 
-
+        self.__default_user()
 
 
 
@@ -80,7 +86,7 @@ class GUI(tk.Tk):
     def __create_cem_view(self, cem_frame: tk.Frame):
         self.label_cem_form = tk.Label(cem_frame, text="Dodawanie cmentarza")
         self.label_cem_form.grid(row=0, column=0, columnspan=2)
-        entries = self.__user_config["cmentarze"]["entries"]
+        entries = self._user_config["cmentarze"]["entries"]
         entries["address"] = self.__create_form(cem_frame,3, "Adres")
         entries["name"] =  self.__create_form(cem_frame,1, "Nazwa")
         entries["type"] = self.__create_form(cem_frame, 2, "Rodzaj", "combobox",["komunalny", "rzymskokatolicki", "ewangelicki", "żydowski", "prawosławny", "inny"])
@@ -97,15 +103,15 @@ class GUI(tk.Tk):
         self.button_show_workers.grid(row=5, column=0, columnspan=2)
         self.button_show_workers = tk.Checkbutton(cem_frame, text="Pokaż klientów", variable=self.client_state,
                                                   onvalue=1, offvalue=0, command=self.cemetery_clients)
-        self.button_show_workers.grid(row=5, column=0, columnspan=2)
+        self.button_show_workers.grid(row=6, column=0, columnspan=2)
 
 
     def __create_worker_view(self, worker_frame: tk.Frame):
-        cemeteries_list = self.__user_config["cmentarze"]["logic"].get_cemetery_list()
+        cemeteries_list = self._user_config["cmentarze"]["logic"].get_cemetery_list()
 
         self.label_cem_form = tk.Label(worker_frame, text="Dodawanie pracownika cmentarza")
         self.label_cem_form.grid(row=0, column=0, columnspan=2)
-        entries = self.__user_config["pracownicy"]["entries"]
+        entries = self._user_config["pracownicy"]["entries"]
         entries["address"] = self.__create_form(worker_frame, 3, "Adres")
         entries["name"] = self.__create_form(worker_frame, 1, "Imie")
         entries["surname"] = self.__create_form(worker_frame,2, "Nazwisko")
@@ -119,11 +125,11 @@ class GUI(tk.Tk):
         self.button_remove.config(text="Usuń pracownika", command=self.worker_logic.remove_worker)
     #
     def __create_client_view(self, client_frame:tk.Frame):
-        cemeteries_list = self.__user_config["cmentarze"]["logic"].get_cemetery_list()
+        cemeteries_list = self._user_config["cmentarze"]["logic"].get_cemetery_list()
 
         self.label_cem_form = tk.Label(client_frame, text="Dodawanie klienta cmentarza")
         self.label_cem_form.grid(row=0, column=0, columnspan=2)
-        entries = self.__user_config["klienci"]["entries"]
+        entries = self._user_config["klienci"]["entries"]
         entries["address"] = self.__create_form(client_frame,3, "Adres")
         entries["name"] = self.__create_form(client_frame,1, "Nazwa")
         entries["type"] = self.__create_form(client_frame,2, "Typ działalności", "combobox", ["usługi pogrzebowe", "sprzedaż nagrobków", "kwiaciarnia", "inne"])
@@ -152,15 +158,19 @@ class GUI(tk.Tk):
         self.worker_logic.worker_remove_markers()
         self.client_logic.client_remove_markers()
 
-    def __change_user(self):
+    def __change_user(self, default_user= None):
         self.__clean_view()
         self.current_frame = tk.Frame(self)
         self.current_frame.grid(row=0, column=1, padx=10, sticky="w")
 
-        self.current_object = self.entry_choose_user.get()
-        config = self.__user_config[self.current_object]
+        self.current_object = self.entry_choose_user.get() if not default_user else default_user
+        config = self._user_config[self.current_object]
         config["builder"](self.current_frame)
         config["show"]()
+
+    def __default_user(self):
+        self.entry_choose_user.set("cmentarze")
+        self.__change_user("cmentarze")
 
     def cemetery_workers(self) -> None:
         selected_index = self.get_active_index()
@@ -170,12 +180,12 @@ class GUI(tk.Tk):
     def cemetery_clients(self) -> None:
         selected_index = self.get_active_index()
         if selected_index != -1:
-            pass
+            self.cem_logic.get_cemetery_clients(selected_index, self.client_state.get())
 
 
 
     def get_entry(self) -> list:
-        data = self.__user_config[self.current_object]["entries"]
+        data = self._user_config[self.current_object]["entries"]
         return [obj.get() for obj in data.values()]
 
     def update_info(self, object_list: list) -> None:
@@ -184,7 +194,7 @@ class GUI(tk.Tk):
             self.listbox_list.insert(tk.END,f"{idx + 1}. {item.name} {item.c_type if self.current_object == 'cmentarze' else ''} {item.surname if self.current_object == "pracownicy" else ''}")
 
     def clear_form(self):
-        data = self.__user_config[self.current_object]["entries"]
+        data = self._user_config[self.current_object]["entries"]
         for widget in data.values():
             if isinstance(widget, tk.Entry):
                 widget.delete(0, tk.END)
@@ -197,7 +207,7 @@ class GUI(tk.Tk):
 
     def fill_form(self, edited_obj: object, index: int) -> None:
         self.clear_form()
-        entries = self.__user_config[self.current_object]["entries"]
+        entries = self._user_config[self.current_object]["entries"]
         
         if self.current_object == "cmentarze":
             entries["address"].insert(0, edited_obj.address)
