@@ -1,6 +1,5 @@
 from PADG_lib.model import Cemetery, CemeteryRepository, Worker, WorkerRepository, Client, ClientRepository
 
-
 class Controller:
     '''
     Base Controller class to manage entities and their GUI representation.
@@ -257,4 +256,14 @@ class ClientFunctions(Controller):
         '''
         super().remove_markers()
 
+class LogInController:
+    def __init__(self, gui_instance):
+        self.gui = gui_instance
 
+    def confirm_login(self):
+        '''
+        Confirm login credentials
+        '''
+        username, password = self.gui.get_login_entry()
+        if username == "admin" and password == "admin":
+            self.gui.create_app_view()

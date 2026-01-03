@@ -1,8 +1,9 @@
 import tkinter as tk
+from asyncio import wait_for
 from tkinter import ttk
 import tkintermapview
 
-from PADG_lib.controller import CemeteryFunctions, WorkerFunctions, ClientFunctions
+from PADG_lib.controller import CemeteryFunctions, WorkerFunctions, ClientFunctions, LogInController
 
 
 class GUI(tk.Tk):
@@ -12,14 +13,15 @@ class GUI(tk.Tk):
         self.geometry("1025x600")
         self.current_object = None
         self.current_frame = None
+        self.login_logic = LogInController(self)
+
+        self.__login_setup()
+
 
         self.cem_logic = CemeteryFunctions(self)
         self.worker_logic = WorkerFunctions(self)
         self.client_logic = ClientFunctions(self)
 
-        self.__frame_setup()
-        self.__create_main_widgets()
-        self.__create_map_view()
 
         self._user_config = {
             "cmentarze": {"logic": self.cem_logic, "builder": self.__create_cemetery_view,
@@ -29,9 +31,38 @@ class GUI(tk.Tk):
             "klienci": {"logic": self.client_logic, "builder": self.__create_client_view,
                         "show": self.client_logic.client_show, "entries": {}},
         }
-        
-        self.__default_user()
 
+
+
+    def __login_setup(self):
+        self.frame_log = tk.Frame(self)
+        self.frame_log.grid(row=0, column=0, sticky="nw")
+
+        self.frame_register = tk.Frame(self)
+        self.frame_register.grid(row=0, column=1, padx=10, sticky="nw")
+
+        self.__create_login_view()
+
+    def __create_login_view(self) -> None:
+        '''
+        Create login view
+        '''
+
+        self.label_login = tk.Label(self.frame_log, text="Zaloguj się")
+        self.label_login.grid(row=0, column=0, columnspan=2)
+        self.login = self.__create_form_widget(self.frame_log, 1, "login")
+        self.password = self.__create_form_widget(self.frame_log, 2, "hasło")
+
+        self.button_login = tk.Button(self.frame_log, command=self.login_logic.confirm_login, text="Zaloguj")
+        self.button_login.grid(row=3, column=1)
+
+
+
+    def get_login_entry(self):
+        return [self.login.get(), self.password.get()]
+
+    def get_register_entry(self):
+        return [self.entry_name.get(), self.entry_password.get(), self.entry_repeat_password.get()]
 
     def __frame_setup(self) -> None:
         '''
@@ -45,6 +76,17 @@ class GUI(tk.Tk):
 
         self.frame_map = tk.Frame(self)
         self.frame_map.grid(row=2, column=0, pady=10, columnspan= 2)
+
+    def create_app_view(self) -> None:
+        '''
+        Remove logging frames and show main app view
+        '''
+        self.frame_log.destroy()
+        self.frame_register.destroy()
+        self.__frame_setup()
+        self.__create_main_widgets()
+        self.__create_map_view()
+        self.__default_user()
 
     def __create_main_widgets(self) -> None:
         '''
