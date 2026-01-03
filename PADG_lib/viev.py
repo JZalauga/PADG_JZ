@@ -66,7 +66,7 @@ class GUI(tk.Tk):
         self.entry_name = self.__create_form_widget(self.frame_register, 1, "Nazwa użytkownika")
         self.entry_password = self.__create_form_widget(self.frame_register, 2, "Hasło")
         self.entry_repeat_password = self.__create_form_widget(self.frame_register, 3, "Powtórz hasło")
-        self.button_register = tk.Button(self.frame_register, command=lambda: print("Rejestracja"), text="Zarejestruj")
+        self.button_register = tk.Button(self.frame_register, command= self.login_logic.register_user(), text="Zarejestruj")
         self.button_register.grid(row=4, column=1)
 
     def get_login_entry(self):
@@ -74,6 +74,21 @@ class GUI(tk.Tk):
 
     def get_register_entry(self):
         return [self.entry_name.get(), self.entry_password.get(), self.entry_repeat_password.get()]
+
+    def clean_login_entries(self) -> None:
+        '''
+        Clear login entries
+        '''
+        self.login.delete(0, tk.END)
+        self.password.delete(0, tk.END)
+
+    def clean_register_entries(self) -> None:
+        '''
+        Clear register entries
+        '''
+        self.entry_name.delete(0, tk.END)
+        self.entry_password.delete(0, tk.END)
+        self.entry_repeat_password.delete(0, tk.END)
 
     def __frame_setup(self) -> None:
         '''
@@ -125,7 +140,7 @@ class GUI(tk.Tk):
         self.button_edit = tk.Button(self.frame_list)
         self.button_edit.grid(row=3, column=2)
 
-    def __create_form_widget(self, frame: tk.Frame,row: int, label_text: str, widget_type: str = "entry", values: list = None) -> tk.Widget:
+    def __create_form_widget(self, frame: tk.Frame,row: int, label_text: str, widget_type: str = "entry", values: list = None) -> tk.Entry:
         '''
         Create entry or combobox widget with label depend on selected type
         :param frame: tk.Frame
