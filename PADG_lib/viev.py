@@ -42,6 +42,7 @@ class GUI(tk.Tk):
         self.frame_register.grid(row=0, column=1, padx=10, sticky="nw")
 
         self.__create_login_view()
+        self.__create_register_view()
 
     def __create_login_view(self) -> None:
         '''
@@ -56,7 +57,17 @@ class GUI(tk.Tk):
         self.button_login = tk.Button(self.frame_log, command=self.login_logic.confirm_login, text="Zaloguj")
         self.button_login.grid(row=3, column=1)
 
-
+    def __create_register_view(self) -> None:
+        '''
+        Create register view
+        '''
+        self.label_register = tk.Label(self.frame_register, text="Zarejestruj się")
+        self.label_register.grid(row=0, column=0, columnspan=2)
+        self.entry_name = self.__create_form_widget(self.frame_register, 1, "Nazwa użytkownika")
+        self.entry_password = self.__create_form_widget(self.frame_register, 2, "Hasło")
+        self.entry_repeat_password = self.__create_form_widget(self.frame_register, 3, "Powtórz hasło")
+        self.button_register = tk.Button(self.frame_register, command=lambda: print("Rejestracja"), text="Zarejestruj")
+        self.button_register.grid(row=4, column=1)
 
     def get_login_entry(self):
         return [self.login.get(), self.password.get()]
