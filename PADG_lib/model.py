@@ -379,13 +379,19 @@ class LoginDataRepository:
         )
         self.cursor = self.db_engine.cursor()
 
-    def get_password(self, username: str) -> tuple[str, str]:
+    def get_password(self, username: str) -> str:
         SQL = "SELECT username, password_hash FROM public.user_auth WHERE username= %s;"
         self.cursor.execute(SQL, (username,))
         entry = self.cursor.fetchone()
-        return (entry[1]) if entry else None
+        return entry[1] if entry else None
 
     def add_login_data(self, username: str, password_hash: str) -> None:
         SQL = "INSERT INTO public.user_auth(username, password_hash) VALUES (%s, %s);"
         self.cursor.execute(SQL, (username, password_hash))
         self.db_engine.commit()
+
+    def check_login(self, username: str) -> bool:
+        SQL = "SELECT EXISTS(SELECT 1 FROM public.user_auth WHERE username= %s);"
+        self.cursor.execute(SQL, (username,))
+        entry = self.cursor.fetchone()
+        return entry[0]
