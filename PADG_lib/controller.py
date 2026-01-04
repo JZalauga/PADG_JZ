@@ -268,9 +268,18 @@ class LogInController:
         '''
         Confirm login credentials
         '''
-        username, password = self.gui.get_login_entry()
-        if username == "admin" and password == "admin":
-            self.gui.create_app_view()
+        username, enter_password = self.gui.get_login_entry()
+        if not self.database.check_login(username):
+            print("Taki użytkownik nie istnieje")
+            return
+        stored_hash = self.database.get_password(username)
+        hash = hashlib.sha256()
+        hash.update(enter_password.encode())
+        enter_hash = hash.hexdigest()
+        if stored_hash != enter_hash:
+            print("Nieporawne hasło")
+            return
+        self.gui.create_app_view()
 
     def register_user(self):
         '''
