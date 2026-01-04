@@ -1,5 +1,4 @@
 import tkinter as tk
-from asyncio import wait_for
 from tkinter import ttk
 import tkintermapview
 
@@ -63,10 +62,10 @@ class GUI(tk.Tk):
         '''
         self.label_register = tk.Label(self.frame_register, text="Zarejestruj się")
         self.label_register.grid(row=0, column=0, columnspan=2)
-        self.entry_name = self.__create_form_widget(self.frame_register, 1, "Nazwa użytkownika")
-        self.entry_password = self.__create_form_widget(self.frame_register, 2, "Hasło")
-        self.entry_repeat_password = self.__create_form_widget(self.frame_register, 3, "Powtórz hasło")
-        self.button_register = tk.Button(self.frame_register, command= self.login_logic.register_user(), text="Zarejestruj")
+        self.entry_name: tk.Entry = self.__create_form_widget(self.frame_register, 1, "Nazwa użytkownika")
+        self.entry_password: tk.Entry = self.__create_form_widget(self.frame_register, 2, "Hasło")
+        self.entry_repeat_password: tk.Entry = self.__create_form_widget(self.frame_register, 3, "Powtórz hasło")
+        self.button_register = tk.Button(self.frame_register, command= self.login_logic.register_user, text="Zarejestruj")
         self.button_register.grid(row=4, column=1)
 
     def get_login_entry(self):
