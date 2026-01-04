@@ -1,4 +1,7 @@
-from PADG_lib.model import Cemetery, CemeteryRepository, Worker, WorkerRepository, Client, ClientRepository
+import hashlib
+
+from PADG_lib.model import Cemetery, CemeteryRepository, Worker, WorkerRepository, Client, ClientRepository, LoginDataRepository
+
 
 class Controller:
     '''
@@ -259,6 +262,7 @@ class ClientFunctions(Controller):
 class LogInController:
     def __init__(self, gui_instance):
         self.gui = gui_instance
+        self.database = LoginDataRepository()
 
     def confirm_login(self):
         '''
@@ -267,3 +271,21 @@ class LogInController:
         username, password = self.gui.get_login_entry()
         if username == "admin" and password == "admin":
             self.gui.create_app_view()
+
+    def register_user(self):
+        '''
+        Register new user
+        '''
+        username, password, repeat_password = self.gui.get_register_entry()
+        print(username, password, repeat_password)
+        if password != repeat_password:
+            print("Passwords do not match")
+            return
+        if self.database.check_login(username):
+            print("Username already exists")
+            return
+        hash = hashlib.sha256()
+        hash.update(password.encode())
+        hash_password = hash.hexdigest()
+        self.database.add_login_data(username, hash_password)
+        self.gui.clean_register_entries()
