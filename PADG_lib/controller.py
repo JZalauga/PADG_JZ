@@ -270,14 +270,14 @@ class LogInController:
         '''
         username, enter_password = self.gui.get_login_entry()
         if not self.database.check_login(username):
-            print("Taki użytkownik nie istnieje")
+            self.gui.login_failed_alert()
             return
         stored_hash = self.database.get_password(username)
         hash = hashlib.sha256()
         hash.update(enter_password.encode())
         enter_hash = hash.hexdigest()
         if stored_hash != enter_hash:
-            print("Nieporawne hasło")
+            self.gui.login_error_alert()
             return
         self.gui.create_app_view()
 
@@ -288,10 +288,10 @@ class LogInController:
         username, password, repeat_password = self.gui.get_register_entry()
         print(username, password, repeat_password)
         if password != repeat_password:
-            print("Passwords do not match")
+            self.gui.password_mismatch_alert()
             return
         if self.database.check_login(username):
-            print("Username already exists")
+            self.gui.username_exists_alert()
             return
         hash = hashlib.sha256()
         hash.update(password.encode())
