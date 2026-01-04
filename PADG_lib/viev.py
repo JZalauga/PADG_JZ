@@ -43,6 +43,9 @@ class GUI(tk.Tk):
         self.__create_login_view()
         self.__create_register_view()
 
+        self.__create_login_alerts()
+        self.__remove_login_alerts()
+
     def __create_login_view(self) -> None:
         '''
         Create login view
@@ -67,6 +70,50 @@ class GUI(tk.Tk):
         self.entry_repeat_password: tk.Entry = self.__create_form_widget(self.frame_register, 3, "Powtórz hasło")
         self.button_register = tk.Button(self.frame_register, command= self.login_logic.register_user, text="Zarejestruj")
         self.button_register.grid(row=4, column=1)
+
+    def __create_login_alerts(self) -> None:
+        '''
+        Create login alert labels
+        '''
+        self.login_alert = tk.Label(self.frame_log, text="Niepoprawny użytkownik lub hasło", fg="red")
+        self.login_alert.grid(row=4, column=0, columnspan=2)
+
+        self.register_alerts: dict = {
+            "password_mismatch": tk.Label(self.frame_register, text="Hasła są różne", fg="red"),
+            "username_exists": tk.Label(self.frame_register, text=" Podana nazwa użytkownika już istnieje", fg="red")
+        }
+
+        for alert in self.register_alerts.values():
+            alert.grid(row=5, column=0, columnspan=2)
+
+    def __remove_login_alerts(self) -> None:
+        '''
+        Remove login alert labels
+        '''
+        self.login_alert.grid_remove()
+        for alert in self.register_alerts.values():
+            alert.grid_remove()
+
+    def username_exists_alert(self) -> None:
+        '''
+        Show username exists alert
+        '''
+        self.__remove_login_alerts()
+        self.register_alerts["username_exists"].grid()
+
+    def password_mismatch_alert(self) -> None:
+        '''
+        Show password mismatch alert
+        '''
+        self.__remove_login_alerts()
+        self.register_alerts["password_mismatch"].grid()
+
+    def login_failed_alert(self) -> None:
+        '''
+        Show login failed alert
+        '''
+        self.__remove_login_alerts()
+        self.login_alert.grid()
 
     def get_login_entry(self):
         return [self.login.get(), self.password.get()]
