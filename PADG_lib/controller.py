@@ -34,8 +34,9 @@ class Controller:
         Remove selected entity and its marker from the map and data repository
         '''
         index = self.gui.get_active_index()
-        remove_entity = self.DataClass.get_all()[index]
+        print(index)
         self.marker_list[index].delete()
+        remove_entity = self.DataClass.get_all()[index]
         self.DataClass.delete(remove_entity.index)
         self.gui.update_info(self.DataClass.get_all())
 
@@ -73,7 +74,7 @@ class Controller:
     def remove_markers(self) -> None:
         '''
         Remove all markers from the map
-        :return:
+        :return: None
         '''
         if self.marker_list:
             for marker in self.marker_list:
@@ -167,7 +168,7 @@ class CemeteryFunctions(Controller):
         '''
         for marker in marker_list:
             marker.delete()
-        self.marker_list.clear()
+        marker_list.clear()
 
 
 
@@ -277,7 +278,7 @@ class LogInController:
         hash.update(enter_password.encode())
         enter_hash = hash.hexdigest()
         if stored_hash != enter_hash:
-            self.gui.login_error_alert()
+            self.gui.login_failed_alert()
             return
         self.gui.create_app_view()
 
