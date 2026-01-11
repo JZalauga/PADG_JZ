@@ -61,6 +61,7 @@ class Controller:
         self.marker_list.insert(index,self.gui.set_marker(edited_entity.coords[0], edited_entity.coords[1], edited_entity.name, edited_entity.color))
         self.gui.update_info(self.DataClass.get_all())
         self.gui.clear_form()
+        self.gui.change_button_text()
 
     def show(self) -> None:
         '''

@@ -14,7 +14,7 @@ class GUI(tk.Tk):
         self.current_frame = None
         self.login_logic = LogInController(self)
 
-        self.__login_setup()
+
 
 
         self.cem_logic = CemeteryFunctions(self)
@@ -31,9 +31,15 @@ class GUI(tk.Tk):
                         "show": self.client_logic.client_show, "entries": {}},
         }
 
+        self.__login_setup()
 
 
-    def __login_setup(self):
+
+    def __login_setup(self) -> None:
+        '''
+        Create login and register frames
+        :return:
+        '''
         self.frame_log = tk.Frame(self)
         self.frame_log.grid(row=0, column=0, sticky="nw")
 
@@ -115,10 +121,18 @@ class GUI(tk.Tk):
         self.__remove_login_alerts()
         self.login_alert.grid()
 
-    def get_login_entry(self):
+    def get_login_entry(self) -> list[str]:
+        '''
+        Get login entries data
+        :return: list
+        '''
         return [self.login.get(), self.password.get()]
 
-    def get_register_entry(self):
+    def get_register_entry(self) -> list[str]:
+        '''
+        Get register entries data
+        :return: list
+        '''
         return [self.entry_name.get(), self.entry_password.get(), self.entry_repeat_password.get()]
 
     def clean_login_entries(self) -> None:
@@ -406,6 +420,17 @@ class GUI(tk.Tk):
             entries["cemetery"].insert(0, edited_obj.cemetery)
 
             self.button_client_add.config(text="Zapisz zmiany", command = lambda: self.client_logic.update_client(index))
+
+    def change_button_text(self):
+        '''
+        Change add button text back to default after editing
+        '''
+        if self.current_object == "cmentarze":
+            self.button_cem_add.config(text="Dodaj cmentarz", command=self.cem_logic.add_cemetery)
+        if self.current_object == "pracownicy":
+            self.button_worker_add.config(text="Dodaj pracownika", command=self.worker_logic.add_worker)
+        if self.current_object == "klienci":
+            self.button_client_add.config(text="Dodaj klienta", command=self.client_logic.add_client)
             
     def set_marker(self, latitude: float, longitude: float, text: str, color: str) -> object:
         '''
