@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import tkintermapview
 
-from PADG_lib.controller import CemeteryFunctions, WorkerFunctions, ClientFunctions
+from PADG_lib.controller import CemeteryFunctions, WorkerFunctions, ClientFunctions, LogInController
 
 
 class GUI(tk.Tk):
@@ -12,14 +12,15 @@ class GUI(tk.Tk):
         self.geometry("1025x600")
         self.current_object = None
         self.current_frame = None
+        self.login_logic = LogInController(self)
+
+
+
 
         self.cem_logic = CemeteryFunctions(self)
         self.worker_logic = WorkerFunctions(self)
         self.client_logic = ClientFunctions(self)
 
-        self.__frame_setup()
-        self.__create_main_widgets()
-        self.__create_map_view()
 
         self._user_config = {
             "cmentarze": {"logic": self.cem_logic, "builder": self.__create_cemetery_view,
@@ -29,9 +30,125 @@ class GUI(tk.Tk):
             "klienci": {"logic": self.client_logic, "builder": self.__create_client_view,
                         "show": self.client_logic.client_show, "entries": {}},
         }
-        
-        self.__default_user()
 
+        self.__login_setup()
+
+
+
+    def __login_setup(self) -> None:
+        '''
+        Create login and register frames
+        :return:
+        '''
+        self.frame_log = tk.Frame(self)
+        self.frame_log.grid(row=0, column=0, sticky="nw")
+
+        self.frame_register = tk.Frame(self)
+        self.frame_register.grid(row=0, column=1, padx=10, sticky="nw")
+
+        self.__create_login_view()
+        self.__create_register_view()
+
+        self.__create_login_alerts()
+        self.__remove_login_alerts()
+
+    def __create_login_view(self) -> None:
+        '''
+        Create login view
+        '''
+
+        self.label_login = tk.Label(self.frame_log, text="Zaloguj się")
+        self.label_login.grid(row=0, column=0, columnspan=2)
+        self.login = self.__create_form_widget(self.frame_log, 1, "login")
+        self.password = self.__create_form_widget(self.frame_log, 2, "hasło")
+
+        self.button_login = tk.Button(self.frame_log, command=self.login_logic.confirm_login, text="Zaloguj")
+        self.button_login.grid(row=3, column=1)
+
+    def __create_register_view(self) -> None:
+        '''
+        Create register view
+        '''
+        self.label_register = tk.Label(self.frame_register, text="Zarejestruj się")
+        self.label_register.grid(row=0, column=0, columnspan=2)
+        self.entry_name: tk.Entry = self.__create_form_widget(self.frame_register, 1, "Nazwa użytkownika")
+        self.entry_password: tk.Entry = self.__create_form_widget(self.frame_register, 2, "Hasło")
+        self.entry_repeat_password: tk.Entry = self.__create_form_widget(self.frame_register, 3, "Powtórz hasło")
+        self.button_register = tk.Button(self.frame_register, command= self.login_logic.register_user, text="Zarejestruj")
+        self.button_register.grid(row=4, column=1)
+
+    def __create_login_alerts(self) -> None:
+        '''
+        Create login alert labels
+        '''
+        self.login_alert = tk.Label(self.frame_log, text="Niepoprawny użytkownik lub hasło", fg="red")
+        self.login_alert.grid(row=4, column=0, columnspan=2)
+
+        self.register_alerts: dict = {
+            "password_mismatch": tk.Label(self.frame_register, text="Hasła są różne", fg="red"),
+            "username_exists": tk.Label(self.frame_register, text=" Podana nazwa użytkownika już istnieje", fg="red")
+        }
+
+        for alert in self.register_alerts.values():
+            alert.grid(row=5, column=0, columnspan=2)
+
+    def __remove_login_alerts(self) -> None:
+        '''
+        Remove login alert labels
+        '''
+        self.login_alert.grid_remove()
+        for alert in self.register_alerts.values():
+            alert.grid_remove()
+
+    def username_exists_alert(self) -> None:
+        '''
+        Show username exists alert
+        '''
+        self.__remove_login_alerts()
+        self.register_alerts["username_exists"].grid()
+
+    def password_mismatch_alert(self) -> None:
+        '''
+        Show password mismatch alert
+        '''
+        self.__remove_login_alerts()
+        self.register_alerts["password_mismatch"].grid()
+
+    def login_failed_alert(self) -> None:
+        '''
+        Show login failed alert
+        '''
+        self.__remove_login_alerts()
+        self.login_alert.grid()
+
+    def get_login_entry(self) -> list[str]:
+        '''
+        Get login entries data
+        :return: list
+        '''
+        return [self.login.get(), self.password.get()]
+
+    def get_register_entry(self) -> list[str]:
+        '''
+        Get register entries data
+        :return: list
+        '''
+        return [self.entry_name.get(), self.entry_password.get(), self.entry_repeat_password.get()]
+
+    def clean_login_entries(self) -> None:
+        '''
+        Clear login entries
+        '''
+        self.login.delete(0, tk.END)
+        self.password.delete(0, tk.END)
+
+    def clean_register_entries(self) -> None:
+        '''
+        Clear register entries
+        '''
+        self.entry_name.delete(0, tk.END)
+        self.entry_password.delete(0, tk.END)
+        self.entry_repeat_password.delete(0, tk.END)
 
     def __frame_setup(self) -> None:
         '''
@@ -45,6 +162,17 @@ class GUI(tk.Tk):
 
         self.frame_map = tk.Frame(self)
         self.frame_map.grid(row=2, column=0, pady=10, columnspan= 2)
+
+    def create_app_view(self) -> None:
+        '''
+        Remove logging frames and show main app view
+        '''
+        self.frame_log.destroy()
+        self.frame_register.destroy()
+        self.__frame_setup()
+        self.__create_main_widgets()
+        self.__create_map_view()
+        self.__default_user()
 
     def __create_main_widgets(self) -> None:
         '''
@@ -72,7 +200,7 @@ class GUI(tk.Tk):
         self.button_edit = tk.Button(self.frame_list)
         self.button_edit.grid(row=3, column=2)
 
-    def __create_form_widget(self, frame: tk.Frame,row: int, label_text: str, widget_type: str = "entry", values: list = None) -> tk.Widget:
+    def __create_form_widget(self, frame: tk.Frame,row: int, label_text: str, widget_type: str = "entry", values: list = None) -> tk.Entry:
         '''
         Create entry or combobox widget with label depend on selected type
         :param frame: tk.Frame
@@ -292,6 +420,17 @@ class GUI(tk.Tk):
             entries["cemetery"].insert(0, edited_obj.cemetery)
 
             self.button_client_add.config(text="Zapisz zmiany", command = lambda: self.client_logic.update_client(index))
+
+    def change_button_text(self):
+        '''
+        Change add button text back to default after editing
+        '''
+        if self.current_object == "cmentarze":
+            self.button_cem_add.config(text="Dodaj cmentarz", command=self.cem_logic.add_cemetery)
+        if self.current_object == "pracownicy":
+            self.button_worker_add.config(text="Dodaj pracownika", command=self.worker_logic.add_worker)
+        if self.current_object == "klienci":
+            self.button_client_add.config(text="Dodaj klienta", command=self.client_logic.add_client)
             
     def set_marker(self, latitude: float, longitude: float, text: str, color: str) -> object:
         '''

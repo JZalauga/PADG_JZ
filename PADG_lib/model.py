@@ -357,3 +357,41 @@ class ClientRepository(Repository[Worker]):
         self.cursor.execute(SQL, (id, ))
         self.db_engine.commit()
 
+class LoginDataRepository:
+    '''
+    Class that manages all repositories
+    '''
+    def __init__(self):
+        self.db_engine = None
+        self.cursor = None
+        self.db_connection()
+
+    def db_connection(self):
+        '''
+        Create connection to local PostgreSQL database
+        '''
+        self.db_engine = psycopg2.connect(
+            user="postgres",
+            database="cemetery_database",
+            password="postgres",
+            port="5432",
+            host="localhost",
+        )
+        self.cursor = self.db_engine.cursor()
+
+    def get_password(self, username: str) -> str:
+        SQL = "SELECT username, password_hash FROM public.user_auth WHERE username= %s;"
+        self.cursor.execute(SQL, (username,))
+        entry = self.cursor.fetchone()
+        return entry[1] if entry else None
+
+    def add_login_data(self, username: str, password_hash: str) -> None:
+        SQL = "INSERT INTO public.user_auth(username, password_hash) VALUES (%s, %s);"
+        self.cursor.execute(SQL, (username, password_hash))
+        self.db_engine.commit()
+
+    def check_login(self, username: str) -> bool:
+        SQL = "SELECT EXISTS(SELECT 1 FROM public.user_auth WHERE username= %s);"
+        self.cursor.execute(SQL, (username,))
+        entry = self.cursor.fetchone()
+        return entry[0]

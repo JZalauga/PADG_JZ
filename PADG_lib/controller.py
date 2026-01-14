@@ -1,4 +1,6 @@
-from PADG_lib.model import Cemetery, CemeteryRepository, Worker, WorkerRepository, Client, ClientRepository
+import hashlib
+
+from PADG_lib.model import Cemetery, CemeteryRepository, Worker, WorkerRepository, Client, ClientRepository, LoginDataRepository
 
 
 class Controller:
@@ -32,8 +34,8 @@ class Controller:
         Remove selected entity and its marker from the map and data repository
         '''
         index = self.gui.get_active_index()
-        remove_entity = self.DataClass.get_all()[index]
         self.marker_list[index].delete()
+        remove_entity = self.DataClass.get_all()[index]
         self.DataClass.delete(remove_entity.index)
         self.gui.update_info(self.DataClass.get_all())
 
@@ -58,6 +60,7 @@ class Controller:
         self.marker_list.insert(index,self.gui.set_marker(edited_entity.coords[0], edited_entity.coords[1], edited_entity.name, edited_entity.color))
         self.gui.update_info(self.DataClass.get_all())
         self.gui.clear_form()
+        self.gui.change_button_text()
 
     def show(self) -> None:
         '''
@@ -71,7 +74,7 @@ class Controller:
     def remove_markers(self) -> None:
         '''
         Remove all markers from the map
-        :return:
+        :return: None
         '''
         if self.marker_list:
             for marker in self.marker_list:
@@ -165,7 +168,7 @@ class CemeteryFunctions(Controller):
         '''
         for marker in marker_list:
             marker.delete()
-        self.marker_list.clear()
+        marker_list.clear()
 
 
 
@@ -257,4 +260,41 @@ class ClientFunctions(Controller):
         '''
         super().remove_markers()
 
+class LogInController:
+    def __init__(self, gui_instance):
+        self.gui = gui_instance
+        self.database = LoginDataRepository()
 
+    def confirm_login(self) -> None:
+        '''
+        Confirm login credentials
+        '''
+        username, enter_password = self.gui.get_login_entry()
+        if not self.database.check_login(username):
+            self.gui.login_failed_alert()
+            return
+        stored_hash = self.database.get_password(username)
+        hash = hashlib.sha256()
+        hash.update(enter_password.encode())
+        enter_hash = hash.hexdigest()
+        if stored_hash != enter_hash:
+            self.gui.login_failed_alert()
+            return
+        self.gui.create_app_view()
+
+    def register_user(self) -> None:
+        '''
+        Register new user
+        '''
+        username, password, repeat_password = self.gui.get_register_entry()
+        if password != repeat_password:
+            self.gui.password_mismatch_alert()
+            return
+        if self.database.check_login(username):
+            self.gui.username_exists_alert()
+            return
+        hash = hashlib.sha256()
+        hash.update(password.encode())
+        hash_password = hash.hexdigest()
+        self.database.add_login_data(username, hash_password)
+        self.gui.clean_register_entries()
