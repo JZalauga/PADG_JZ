@@ -34,7 +34,6 @@ class Controller:
         Remove selected entity and its marker from the map and data repository
         '''
         index = self.gui.get_active_index()
-        print(index)
         self.marker_list[index].delete()
         remove_entity = self.DataClass.get_all()[index]
         self.DataClass.delete(remove_entity.index)
@@ -266,7 +265,7 @@ class LogInController:
         self.gui = gui_instance
         self.database = LoginDataRepository()
 
-    def confirm_login(self):
+    def confirm_login(self) -> None:
         '''
         Confirm login credentials
         '''
@@ -283,12 +282,11 @@ class LogInController:
             return
         self.gui.create_app_view()
 
-    def register_user(self):
+    def register_user(self) -> None:
         '''
         Register new user
         '''
         username, password, repeat_password = self.gui.get_register_entry()
-        print(username, password, repeat_password)
         if password != repeat_password:
             self.gui.password_mismatch_alert()
             return
